@@ -7,7 +7,7 @@ function Register() {
       <div className="rounded-lg outline-cyan-50 bg-card text-card-foreground shadow-sm w-full max-w-md">
         <div className="flex flex-col p-6 space-y-1 text-center">
           <div className="flex justify-center">
-            <GoHeartFill size={35} color="red" />
+            <GoHeartFill size={35} className="text-rose-500" />
           </div>
           <h1 className="font-semibold text-2xl tracking-tight">
             Crie sua conta

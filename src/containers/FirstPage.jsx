@@ -11,14 +11,20 @@ function FirstPage() {
         {/* Header */}
         <div className="flex items-center justify-between p-5">
           <h1 className="flex items-center text-2xl font-bold text-black gap-3">
-            <GoHeartFill size={35} color="red" />
+            <GoHeartFill size={35} className="text-rose-500" />
             Amorize
           </h1>
           <div className="flex gap-5">
-            <button className="text-lg text-gray-500 font-semibold hover:text-gray-400">
+            <button
+              onClick={() => navigate("/login")}
+              className="text-lg text-gray-500 font-semibold hover:text-gray-400"
+            >
               Entrar
             </button>
-            <button className="text-lg text-gray-500 font-semibold hover:text-gray-400">
+            <button
+              onClick={() => navigate("/register")}
+              className="text-lg text-gray-500 font-semibold hover:text-gray-400"
+            >
               Registrar
             </button>
           </div>
@@ -45,7 +51,10 @@ function FirstPage() {
             <ArrowRight className="ml-5 w-4 h-7" />
           </button>
 
-          <button className="ml-5 p-2 rounded-lg text-xl font-semibold bg-slate-200 outline">
+          <button
+            onClick={() => navigate("/login")}
+            className="ml-5 p-2 rounded-lg text-xl font-semibold hover:bg-slate-100 bg-slate-200 outline"
+          >
             Entrar
           </button>
         </div>
