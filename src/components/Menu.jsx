@@ -7,16 +7,18 @@ import {
   Bell,
   User,
 } from "lucide-react";
+import DateWed from "./CalcularData";
 
-function Menu({ setContent, confirmados, totalConvidados }) {
+function Menu({ setContent, dateWed, handleDashboardClick }) {
   const menuItems = [
     {
       icon: <House />,
       label: "Dashboard",
       content: {
         title: "Olá, Silvio & Heribaldo",
-        description: `Confirmados: ${confirmados}/${totalConvidados}`,
+        description: <DateWed weddingDate={dateWed} />,
       },
+      onClick: handleDashboardClick, // Adicionando a função de clique aqui
     },
     {
       icon: <Users />,
@@ -58,7 +60,10 @@ function Menu({ setContent, confirmados, totalConvidados }) {
         <button
           key={index}
           className="text-sm flex gap-5 text-black font-semibold hover:text-gray-400"
-          onClick={() => setContent(item.content)}
+          onClick={() => {
+            setContent(item.content); // Atualiza o conteúdo
+            if (item.onClick) item.onClick(); // Chama a função de clique
+          }}
         >
           {item.icon}
           {item.label}

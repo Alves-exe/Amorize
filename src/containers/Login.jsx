@@ -6,19 +6,30 @@ import { useState } from "react";
 function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [error, setError] = useState(""); // Agora o erro é uma string
+  const [emailError, setEmailError] = useState(""); // Erro para o campo email
+  const [senhaError, setSenhaError] = useState(""); // Erro para o campo senha
   const navigate = useNavigate();
 
-  // Função para validar login
   const handleLogin = () => {
-    if (!email.trim() || !senha.trim()) {
-      setError("Por favor, preencha todos os campos.");
-      return;
+    let valid = true;
+
+    if (!email.trim()) {
+      setEmailError("Preencha o campo de e-mail");
+      valid = false;
+    } else {
+      setEmailError("");
     }
 
-    // Se passar na validação, limpa o erro e navega
-    setError("");
-    navigate("/amorize");
+    if (!senha.trim()) {
+      setSenhaError("Preencha o campo de senha");
+      valid = false;
+    } else {
+      setSenhaError("");
+    }
+
+    if (valid) {
+      navigate("/amorize");
+    }
   };
 
   return (
@@ -35,7 +46,14 @@ function Login() {
             Entre com sua conta para continuar
           </p>
           <div className="justify-items-start space-y-5">
-            <label htmlFor="email">E-mail</label>
+            <div className="flex items-center">
+              <label htmlFor="email" className="mr-2">
+                E-mail
+              </label>
+              {emailError && (
+                <span className="text-red-500 text-xs">{emailError}</span>
+              )}
+            </div>
             <Inputs
               type="email"
               id="email"
@@ -43,7 +61,15 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <label htmlFor="senha">Senha</label>
+
+            <div className="flex items-center">
+              <label htmlFor="senha" className="mr-2">
+                Senha
+              </label>
+              {senhaError && (
+                <span className="text-red-500 text-xs">{senhaError}</span>
+              )}
+            </div>
             <Inputs
               type="password"
               id="senha"
@@ -51,6 +77,7 @@ function Login() {
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
             />
+
             <button
               onClick={() => navigate("/forgot")}
               className="text-sm ml-56 text-rose-600"
@@ -58,17 +85,12 @@ function Login() {
               Esqueceu a senha?
             </button>
           </div>
-
-          {/* Exibição do erro */}
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-
           <button
             onClick={handleLogin}
             className="justify-center items-center bg-rose-500 rounded-lg p-2 mt-6 text-white font-semibold"
           >
             Entrar
           </button>
-
           <h2 className="text-gray-500">
             Não tem uma conta?{" "}
             <button
