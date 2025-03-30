@@ -1,9 +1,26 @@
 import { GoHeartFill } from "react-icons/go";
 import Inputs from "../components/Inputs";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function Login() {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [error, setError] = useState(""); // Agora o erro é uma string
   const navigate = useNavigate();
+
+  // Função para validar login
+  const handleLogin = () => {
+    if (!email.trim() || !senha.trim()) {
+      setError("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    // Se passar na validação, limpa o erro e navega
+    setError("");
+    navigate("/amorize");
+  };
+
   return (
     <div className="flex flex-col min-h-screen justify-center items-center bg-gradient-to-br from-rose-50 to-slate-50 p-4">
       <div className="rounded-lg outline-cyan-50 bg-card text-card-foreground shadow-sm w-full max-w-md">
@@ -18,19 +35,35 @@ function Login() {
             Entre com sua conta para continuar
           </p>
           <div className="justify-items-start space-y-5">
-            <label>E-mail</label>
-            <Inputs type="email" placeholder="Insira seu e-mail" />
-            <label>Senha</label>
+            <label htmlFor="email">E-mail</label>
+            <Inputs
+              type="email"
+              id="email"
+              placeholder="Insira seu e-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <label htmlFor="senha">Senha</label>
+            <Inputs
+              type="password"
+              id="senha"
+              placeholder="Insira sua senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+            />
             <button
               onClick={() => navigate("/forgot")}
               className="text-sm ml-56 text-rose-600"
             >
-              Esqueçeu a senha?
+              Esqueceu a senha?
             </button>
-            <Inputs type="password" placeholder="Insira sua senha" />
           </div>
+
+          {/* Exibição do erro */}
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
           <button
-            onClick={() => navigate("/amorize")}
+            onClick={handleLogin}
             className="justify-center items-center bg-rose-500 rounded-lg p-2 mt-6 text-white font-semibold"
           >
             Entrar
