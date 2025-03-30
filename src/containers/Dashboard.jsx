@@ -2,8 +2,9 @@ import { useState } from "react";
 import { GoHeartFill } from "react-icons/go";
 import Menu from "../components/Menu";
 import Card from "../components/Card";
-import { getConvidadosInfo } from "../components/Convidados";
+import convidados, { getConvidadosInfo } from "../components/Convidados";
 import CardProgress from "../components/CardProgress";
+import Budget from "../components/Budget";
 
 function Dashboard() {
   const [content, setContent] = useState({
@@ -52,8 +53,10 @@ function Dashboard() {
           <CardProgress
             title={"Progresso do Planejamento"}
             subtitle={`Você já completou 40% das tarefas`}
-            progressValue={40} // Passando o valor de progresso (pode ser ajustado)
-            className="bg-blue-100 text-blue-900" // Usando classes adicionais para personalização
+            progressValue={40}
+            className="bg-blue-100 text-rose-200 mt-16"
+            convidados={getConvidadosInfo()}
+            budget={Budget()}
           />
 
           {/* Centralizando os cards com flexbox */}
@@ -63,10 +66,7 @@ function Dashboard() {
               content="Aqui estão as tarefas pendentes do seu casamento."
               className="bg-blue-100 text-blue-900"
             />
-            <Card
-              title="Orçamento"
-              content="Controle seu orçamento para o casamento."
-            />
+            <Card title="Orçamento" content />
             <Card
               title="Mensagens Recentes"
               content="Verifique suas mensagens recentes."
