@@ -18,12 +18,14 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let newErrors = {};
-
+    const today = new Date();
+    const SelectDate = new Date(date);
     if (!name.trim()) newErrors.name = "Campo obrigatório!";
     if (!email.trim()) newErrors.email = "Campo obrigatório!";
     if (!password.trim()) newErrors.password = "Campo obrigatório!";
     if (!confirmPass.trim()) newErrors.confirmPass = "Campo obrigatório!";
-    if (!date.trim()) newErrors.date = "Campo obrigatório!";
+    if (!date) newErrors.date = "Data obrigatória";
+    if (SelectDate < today) newErrors.date = "Insira uma data valida";
     if (password !== confirmPass)
       newErrors.confirmPass = "As senhas nao coincidem!";
 
@@ -41,12 +43,11 @@ function Register() {
         password,
         weddingDate: date,
       });
-      alert("conta criada");
+
       console.log(response.data);
       navigate("/login");
-    } catch (error) {
-      alert("erro ao criar");
-      console.log(error);
+    } catch {
+      null;
     }
   };
   return (

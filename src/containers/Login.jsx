@@ -33,11 +33,10 @@ function Login() {
         (user) => user.email === email && user.password === password
       );
       if (user) {
-        alert("login bem sucedido");
         navigate("/amorize");
       }
-    } catch (error) {
-      setErrors("Erro ao fazer login.");
+    } catch {
+      null;
     }
   };
 
