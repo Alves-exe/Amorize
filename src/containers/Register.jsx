@@ -17,7 +17,7 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!password.trim() == !confirmPass.trim()) {
+    if (password.trim() !== confirmPass.trim()) {
       alert("as senhas nao sao iguais");
       return;
     }
