@@ -47,7 +47,6 @@ function Dashboard() {
         <p className="text-gray-600">{content.description}</p>
       </div>
 
-      {/* Exibe o CardProgress somente se showProgress for true */}
       {showProgress && (
         <div>
           <CardProgress
