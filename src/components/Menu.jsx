@@ -15,7 +15,7 @@ function Menu({ setContent, dateWed, handleDashboardClick }) {
       icon: <House />,
       label: "Dashboard",
       content: {
-        title: "Olá, Silvio & Heribaldo",
+        title: "Olá, Name & Name2",
         description: <DateWed weddingDate={dateWed} />,
       },
       onClick: handleDashboardClick, // Adicionando a função de clique aqui

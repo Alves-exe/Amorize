@@ -2,13 +2,13 @@ import { useState } from "react";
 import { GoHeartFill } from "react-icons/go";
 import Menu from "../components/Menu";
 import Card from "../components/Card";
-import convidados, { getConvidadosInfo } from "../components/Convidados";
+import { getConvidadosInfo } from "../components/Convidados";
 import CardProgress from "../components/CardProgress";
 import Budget from "../components/Budget";
 
 function Dashboard() {
   const [content, setContent] = useState({
-    title: "Olá, Silvio & Heribaldo!",
+    title: "Olá, Name & Name2",
     description: "Escolha uma opção no menu acima para visualizar o conteúdo.",
   });
 
@@ -20,7 +20,7 @@ function Dashboard() {
   const handleDashboardClick = () => {
     setShowProgress(true);
     setContent({
-      title: "Olá, Silvio & Heribaldo!",
+      title: "Olá, Name & Name2",
       description: { DateWed },
     });
   };
@@ -59,14 +59,12 @@ function Dashboard() {
             budget={Budget()}
           />
 
-          {/* Centralizando os cards com flexbox */}
           <div className="flex justify-center items-center gap-5 mt-20 flex-wrap">
             <Card
               title="Proximas tarefas"
               content="Aqui estão as tarefas pendentes do seu casamento."
-              className="bg-blue-100 text-blue-900"
             />
-            <Card title="Orçamento" content />
+            <Card title="Orçamento" content className="bg-blue-100" />
             <Card
               title="Mensagens Recentes"
               content="Verifique suas mensagens recentes."

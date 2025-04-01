@@ -1,7 +1,7 @@
 export default function Card({ title, content, className }) {
   return (
     <div
-      className={`bg-white shadow-lg rounded-lg p-6 justify-items-center ${className}`}
+      className={`bg-white shadow-lg rounded-lg p-6 border border-rose-200 justify-items-center ${className}`}
       style={{ maxWidth: "400px", width: "100%" }}
     >
       {title && (

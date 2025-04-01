@@ -2,33 +2,33 @@ import { GoHeartFill } from "react-icons/go";
 import Inputs from "../components/Inputs";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
 
 function Login() {
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(""); // Erro para o campo email
   const [senhaError, setSenhaError] = useState(""); // Erro para o campo senha
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    let valid = true;
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-    if (!email.trim()) {
-      setEmailError("Preencha o campo de e-mail");
-      valid = false;
-    } else {
-      setEmailError("");
-    }
-
-    if (!senha.trim()) {
-      setSenhaError("Preencha o campo de senha");
-      valid = false;
-    } else {
-      setSenhaError("");
-    }
-
-    if (valid) {
-      navigate("/amorize");
+    try {
+      const response = await axios.get("http://localhost:5000/users", {
+        email,
+        password,
+      });
+      const user = response.data.find(
+        (user) => user.email === email && user.password === password
+      );
+      if (user) {
+        alert("login bem sucedido");
+        navigate("/amorize");
+      }
+    } catch (error) {
+      setError("Erro ao fazer login.");
     }
   };
 
@@ -45,52 +45,53 @@ function Login() {
           <p className="text-gray-500 mt-3">
             Entre com sua conta para continuar
           </p>
-          <div className="justify-items-start space-y-5">
-            <div className="flex items-center">
-              <label htmlFor="email" className="mr-2">
-                E-mail
-              </label>
-              {emailError && (
-                <span className="text-red-500 text-xs">{emailError}</span>
-              )}
-            </div>
-            <Inputs
-              type="email"
-              id="email"
-              placeholder="Insira seu e-mail"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+          <form onSubmit={handleLogin}>
+            <div className="justify-items-start space-y-2">
+              <div className="flex items-center">
+                <label htmlFor="email" className="mr-2">
+                  E-mail
+                </label>
+                {emailError && (
+                  <span className="text-red-500 text-xs">{emailError}</span>
+                )}
+              </div>
+              <Inputs
+                type="email"
+                id="email"
+                placeholder="Insira seu e-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
 
-            <div className="flex items-center">
-              <label htmlFor="senha" className="mr-2">
-                Senha
-              </label>
-              {senhaError && (
-                <span className="text-red-500 text-xs">{senhaError}</span>
-              )}
+              <div className="flex items-center">
+                <label htmlFor="senha" className="mr-2">
+                  Senha
+                </label>
+                {senhaError && (
+                  <span className="text-red-500 text-xs">{senhaError}</span>
+                )}
+                <button
+                  onClick={() => navigate("/forgot")}
+                  className="text-sm ml-56 text-rose-600"
+                >
+                  Esqueceu a senha?
+                </button>
+              </div>
+              <Inputs
+                type="password"
+                id="senha"
+                placeholder="Insira sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
-            <Inputs
-              type="password"
-              id="senha"
-              placeholder="Insira sua senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
-
             <button
-              onClick={() => navigate("/forgot")}
-              className="text-sm ml-56 text-rose-600"
+              type="submit"
+              className="justify-center items-center bg-rose-500 rounded-lg p-2 mt-2 text-white w-full font-semibold"
             >
-              Esqueceu a senha?
+              Entrar
             </button>
-          </div>
-          <button
-            onClick={handleLogin}
-            className="justify-center items-center bg-rose-500 rounded-lg p-2 mt-6 text-white font-semibold"
-          >
-            Entrar
-          </button>
+          </form>
           <h2 className="text-gray-500">
             Não tem uma conta?{" "}
             <button

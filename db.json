@@ -1,0 +1,20 @@
+{
+  "users": [
+    {
+      "id": "3d7c",
+      "name": "admin",
+      "email": "admin@amorize.com",
+      "userType": "organizador",
+      "password": "admin",
+      "weddingDate": "2025-04-10"
+    },
+    {
+      "id": "bb93",
+      "name": "admin2",
+      "email": "admin2@amorize.com",
+      "userType": "fornecedor",
+      "password": "admin",
+      "weddingDate": "2025-04-10"
+    }
+  ]
+}

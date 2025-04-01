@@ -5,7 +5,7 @@ export default function DateWed({ weddingDate }) {
     const timeDiff = wedding - today;
     return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
   };
-  weddingDate = "2025/04/09";
+  weddingDate = "2026/03/30";
   return (
     <div>
       <p>

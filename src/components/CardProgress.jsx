@@ -8,7 +8,7 @@ export default function CardProgress({
 }) {
   return (
     <div
-      className={`bg-white shadow-lg outline rounded-lg p-6 max-w-full mr-32 ml-32 ${className}`}
+      className={`bg-white shadow-lg border border-rose-200 rounded-lg p-6 max-w-full mr-32 ml-32 ${className}`}
     >
       {title && (
         <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
