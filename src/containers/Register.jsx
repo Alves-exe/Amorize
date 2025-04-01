@@ -7,20 +7,31 @@ import axios from "axios";
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [userType, setUserType] = useState("Organizador");
+  const [userType, setUserType] = useState("organizador");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirm] = useState("");
   const [date, setDate] = useState("");
+  const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let newErrors = {};
 
-    if (password.trim() !== confirmPass.trim()) {
-      alert("as senhas nao sao iguais");
+    if (!name.trim()) newErrors.name = "Campo obrigatório!";
+    if (!email.trim()) newErrors.email = "Campo obrigatório!";
+    if (!password.trim()) newErrors.password = "Campo obrigatório!";
+    if (!confirmPass.trim()) newErrors.confirmPass = "Campo obrigatório!";
+    if (!date.trim()) newErrors.date = "Campo obrigatório!";
+    if (password !== confirmPass)
+      newErrors.confirmPass = "As senhas nao coincidem!";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
+    setErrors({});
 
     try {
       const response = await axios.post("http://localhost:5000/users", {
@@ -51,9 +62,13 @@ function Register() {
           <p className="text-sm text-gray-500">
             Comece a planejar seu casamento hoje
           </p>
+
           <form onSubmit={handleSubmit}>
             <div className="p-2 pt-6 space-y-2 items-start flex-col flex text-sm">
               <label className="">Nome Completo</label>
+              {errors.name && (
+                <span className="text-red-500 text-xs ml-2">{errors.name}</span>
+              )}
               <Inputs
                 type="text"
                 placeholder="Insira seu nome"
@@ -61,13 +76,20 @@ function Register() {
                 onChange={(e) => setName(e.target.value)}
               />
               <label>Email</label>
+              {errors.email && (
+                <span className="text-red-500 text-xs ml-2">
+                  {errors.email}
+                </span>
+              )}
               <Inputs
                 type="email"
                 placeholder="Insira seu E-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+
               <label htmlFor="tipo">Classe</label>
+
               <select
                 name="TipoDeRegistro"
                 id="user_type"
@@ -79,7 +101,13 @@ function Register() {
                 <option value="fornecedor">Fornecedor</option>
                 <option value="noivos">Noivos</option>
               </select>
+
               <label>Senha</label>
+              {errors.password && (
+                <span className="text-red-500 text-xs ml-2">
+                  {errors.password}
+                </span>
+              )}
               <Inputs
                 type="password"
                 placeholder="Insira sua Senha"
@@ -87,6 +115,11 @@ function Register() {
                 onChange={(e) => setPassword(e.target.value)}
               />
               <label>Confirme a senha</label>
+              {errors.confirmPass && (
+                <span className="text-red-500 text-xs ml-2">
+                  {errors.confirmPass}
+                </span>
+              )}
               <Inputs
                 type="password"
                 placeholder="Confirme sua senha"
@@ -94,6 +127,9 @@ function Register() {
                 onChange={(e) => setConfirm(e.target.value)}
               />
               <label>Data prevista do casamento</label>
+              {errors.date && (
+                <span className="text-red-500 text-xs ml-2">{errors.date}</span>
+              )}
               <Inputs
                 type="date"
                 value={date}

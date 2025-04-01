@@ -7,13 +7,22 @@ import axios from "axios";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState(""); // Erro para o campo email
-  const [senhaError, setSenhaError] = useState(""); // Erro para o campo senha
-  const [error, setError] = useState("");
+
+  const [errors, setErrors] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    let newErrors = {};
+
+    if (!email.trim()) newErrors.email = "Insira seu e-mail";
+    if (!password.trim()) newErrors.password = "Insira sua senha";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
 
     try {
       const response = await axios.get("http://localhost:5000/users", {
@@ -28,7 +37,7 @@ function Login() {
         navigate("/amorize");
       }
     } catch (error) {
-      setError("Erro ao fazer login.");
+      setErrors("Erro ao fazer login.");
     }
   };
 
@@ -51,8 +60,8 @@ function Login() {
                 <label htmlFor="email" className="mr-2">
                   E-mail
                 </label>
-                {emailError && (
-                  <span className="text-red-500 text-xs">{emailError}</span>
+                {errors.email && (
+                  <span className="text-rose-500 text-xs">{errors.email}</span>
                 )}
               </div>
               <Inputs
@@ -67,8 +76,10 @@ function Login() {
                 <label htmlFor="senha" className="mr-2">
                   Senha
                 </label>
-                {senhaError && (
-                  <span className="text-red-500 text-xs">{senhaError}</span>
+                {errors.password && (
+                  <span className="text-rose-500 text-xs">
+                    {errors.password}
+                  </span>
                 )}
                 <button
                   onClick={() => navigate("/forgot")}
