@@ -4,7 +4,7 @@ const convidados = [
   { nome: "Carlos", confirmado: true },
   { nome: "Ana", confirmado: false },
 ];
-
+const commitruim = 0;
 export function getConvidadosInfo() {
   const total = convidados.length;
   const confirmados = convidados.filter((c) => c.confirmado).length;

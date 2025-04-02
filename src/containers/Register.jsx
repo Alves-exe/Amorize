@@ -14,7 +14,7 @@ function Register() {
   const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
-
+  const commitruim = 0;
   const handleSubmit = async (e) => {
     e.preventDefault();
     let newErrors = {};

@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const commitruim = 0;
+
 export default function DateWed({ weddingDate }) {
   try {
     const response = axios.get("http://localhost:5000/users", {
