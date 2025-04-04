@@ -1,20 +1,14 @@
 {
   "users": [
     {
-      "id": "3d7c",
+      "id": "56b6",
       "name": "admin",
       "email": "admin@amorize.com",
-      "userType": "organizador",
+      "userType": "noivos",
       "password": "admin",
-      "weddingDate": "2025-04-10"
-    },
-    {
-      "id": "bb93",
-      "name": "admin2",
-      "email": "admin2@amorize.com",
-      "userType": "fornecedor",
-      "password": "admin",
-      "weddingDate": "2025-04-10"
+      "weddingDate": "2025-04-10",
+      "partner1": "joao",
+      "partner2": "maria"
     }
   ]
 }

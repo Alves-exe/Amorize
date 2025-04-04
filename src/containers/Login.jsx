@@ -2,9 +2,8 @@ import { GoHeartFill } from "react-icons/go";
 import Inputs from "../components/Inputs";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import { loginUser } from "../services/authService";
 
-const commid = 0;
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,21 +25,15 @@ function Login() {
     setErrors({});
 
     try {
-      const response = await axios.get("http://localhost:5000/users", {
-        email,
-        password,
-      });
-      const user = response.data.find(
-        (user) => user.email === email && user.password === password
-      );
-      if (user) {
-        navigate("/amorize");
-      }
-    } catch {
-      null;
+      console.log("Chamando loginUser...");
+      const user = await loginUser({ email, password });
+      console.log("Usuário logado com sucesso:", user);
+      navigate("/amorize");
+    } catch (err) {
+      console.log("Erro no login:", err);
+      setErrors({ email: err.message });
     }
   };
-
   return (
     <div className="flex flex-col min-h-screen justify-center items-center bg-gradient-to-br from-rose-50 to-slate-50 p-4">
       <div className="rounded-lg outline-cyan-50 bg-card text-card-foreground shadow-sm w-full max-w-md">

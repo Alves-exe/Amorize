@@ -5,26 +5,28 @@ import Card from "../components/Card";
 import { getConvidadosInfo } from "../components/Convidados";
 import CardProgress from "../components/CardProgress";
 import Budget from "../components/Budget";
+import DateWed from "../components/DateWed"; // Importa o componente corretamente
 
 function Dashboard() {
+  const user = JSON.parse(localStorage.getItem("user")); // Recupera o usuário logado
+
   const [content, setContent] = useState({
-    title: "Olá, Name & Name2",
+    title: `Olá, ${user?.partner1 || "Nome"} & ${user?.partner2 || "Nome2"}`,
     description: "Escolha uma opção no menu acima para visualizar o conteúdo.",
   });
 
-  const [showProgress, setShowProgress] = useState(false); // Estado para controlar a exibição do progresso
+  const [showProgress, setShowProgress] = useState(false);
 
   const { total, confirmados } = getConvidadosInfo();
 
-  // Função para exibir o progresso quando clicar em Dashboard
   const handleDashboardClick = () => {
     setShowProgress(true);
     setContent({
-      title: "Olá, Name & Name2",
-      description: { DateWed },
+      title: `Olá, ${user?.partner1} & ${user?.partner2}`,
+      description: "", // O DateWed será renderizado diretamente
     });
   };
-  const commitruim = 0;
+
   return (
     <div>
       <div className="flex justify-between p-5">
@@ -37,14 +39,19 @@ function Dashboard() {
           setContent={setContent}
           confirmados={confirmados}
           totalConvidados={total}
-          handleDashboardClick={handleDashboardClick} // Passando a função para o menu
+          handleDashboardClick={handleDashboardClick}
         />
       </div>
+
       <hr className="opacity-25" />
-      {/* Conteúdo dinâmico abaixo do hr */}
+
       <div className="p-5 text-lg font-medium text-gray-700">
         <h2 className="text-xl font-bold text-black">{content.title}</h2>
-        <p className="text-gray-600">{content.description}</p>
+        {showProgress ? (
+          <DateWed weddingDate={user?.weddingDate} />
+        ) : (
+          <p className="text-gray-600">{content.description}</p>
+        )}
       </div>
 
       {showProgress && (
