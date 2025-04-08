@@ -1,13 +1,27 @@
 {
   "users": [
     {
-      "id": "56b6",
-      "name": "admin",
+      "id": "1c7e",
+      "name": "JOAO & MARIA",
       "email": "admin@amorize.com",
       "userType": "noivos",
       "password": "admin",
       "weddingDate": "2025-04-10",
-      "partner1": "joao",
+      "partner1": "JOAO",
+      "partner2": "MARIA",
+      "convidados": [
+        { "nome": "João", "confirmado": true },
+        { "nome": "Maria", "confirmado": false }
+      ]
+    },
+    {
+      "id": "a906",
+      "name": "pedro & maria",
+      "email": "admin2@amorize.com",
+      "userType": "noivos",
+      "password": "admin",
+      "weddingDate": "2025-04-10",
+      "partner1": "pedro",
       "partner2": "maria"
     }
   ]

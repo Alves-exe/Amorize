@@ -1,198 +1,211 @@
-import { GoHeartFill } from "react-icons/go";
-import Inputs from "../components/Inputs";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [userType, setUserType] = useState("organizador");
-  const [password, setPassword] = useState("");
-  const [confirmPass, setConfirm] = useState("");
-  const [date, setDate] = useState("");
-  const [partner1, setPartner1] = useState("");
-  const [partner2, setPartner2] = useState("");
-  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
+    tipo: "",
+    noivo: "",
+    noiva: "",
+    dataCasamento: "",
+    name: "",
+    email: "",
+    password: "",
+  });
 
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.tipo) newErrors.tipo = "Selecione o tipo de usuário";
+
+    if (formData.tipo === "noivos") {
+      if (!formData.noivo) newErrors.noivo = "Nome do noivo é obrigatório";
+      if (!formData.noiva) newErrors.noiva = "Nome da noiva é obrigatório";
+      if (!formData.dataCasamento)
+        newErrors.dataCasamento = "Data é obrigatória";
+    } else {
+      if (!formData.name) newErrors.name = "Nome é obrigatório";
+    }
+
+    if (!formData.email) newErrors.email = "E-mail é obrigatório";
+    if (!formData.password) newErrors.password = "Senha é obrigatória";
+
+    return newErrors;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let newErrors = {};
-    const today = new Date();
-    const SelectDate = new Date(date);
-
-    if (!name.trim()) newErrors.name = "Campo obrigatório!";
-    if (!email.trim()) newErrors.email = "Campo obrigatório!";
-    if (!password.trim()) newErrors.password = "Campo obrigatório!";
-    if (!confirmPass.trim()) newErrors.confirmPass = "Campo obrigatório!";
-    if (!date) newErrors.date = "Data obrigatória";
-    if (SelectDate < today) newErrors.date = "Insira uma data válida";
-    if (password !== confirmPass)
-      newErrors.confirmPass = "As senhas não coincidem!";
-
-    if (userType === "noivos") {
-      if (!partner1.trim()) newErrors.partner1 = "Campo obrigatório!";
-      if (!partner2.trim()) newErrors.partner2 = "Campo obrigatório!";
-    }
-
+    const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    setErrors({});
 
     try {
-      const response = await axios.post("http://localhost:5000/users", {
-        name,
-        email,
-        userType,
-        password,
-        weddingDate: date,
-        partner1,
-        partner2,
-      });
+      const payload = {
+        name:
+          formData.tipo === "noivos"
+            ? `${formData.noivo} & ${formData.noiva}`
+            : formData.name || "",
 
+        email: formData.email,
+        userType: formData.tipo,
+        password: formData.password,
+
+        weddingDate: formData.tipo === "noivos" ? formData.dataCasamento : null,
+        partner1: formData.tipo === "noivos" ? formData.noivo : "",
+        partner2: formData.tipo === "noivos" ? formData.noiva : "",
+      };
+
+      const response = await axios.post("http://localhost:5000/users", payload);
       console.log("Usuário registrado:", response.data);
-
-      // Salvar no localStorage para simular login
-      localStorage.setItem("currentUser", JSON.stringify(response.data));
-
       navigate("/login");
-    } catch (error) {
-      console.error("Erro ao registrar:", error);
+    } catch (err) {
+      console.error("Erro ao registrar:", err);
+      setErrors({ email: "Erro ao registrar usuário" });
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen justify-center items-center bg-gradient-to-br from-rose-50 to-slate-50 p-4">
-      <div className="rounded-lg outline-cyan-50 bg-card text-card-foreground shadow-sm w-full max-w-md">
-        <div className="flex flex-col p-6 space-y-1 text-center">
-          <div className="flex justify-center">
-            <GoHeartFill size={35} className="text-rose-500" />
-          </div>
-          <h1 className="font-semibold text-2xl tracking-tight">
-            Crie sua conta
-          </h1>
-          <p className="text-sm text-gray-500">
-            Comece a planejar seu casamento hoje
-          </p>
+    <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-rose-50 to-slate-50 p-4">
+      <div className="bg-white rounded-xl shadow-md p-8 w-full max-w-lg">
+        <h1 className="text-2xl font-bold text-center text-rose-500 mb-6">
+          Crie sua conta na Amorize
+        </h1>
 
-          <form onSubmit={handleSubmit}>
-            <div className="p-2 pt-6 space-y-2 items-start flex-col flex text-sm">
-              <label>Nome Completo</label>
-              {errors.name && (
-                <span className="text-red-500 text-xs ml-2">{errors.name}</span>
-              )}
-              <Inputs
-                type="text"
-                placeholder="Insira seu nome"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-
-              <label>Email</label>
-              {errors.email && (
-                <span className="text-red-500 text-xs ml-2">
-                  {errors.email}
-                </span>
-              )}
-              <Inputs
-                type="email"
-                placeholder="Insira seu E-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-
-              <label htmlFor="tipo">Classe</label>
-              <select
-                name="TipoDeRegistro"
-                id="user_type"
-                className="rounded-md h-10 w-full border border-rose-200"
-                value={userType}
-                onChange={(e) => setUserType(e.target.value)}
-              >
-                <option value="organizador">Organizador</option>
-                <option value="fornecedor">Fornecedor</option>
-                <option value="noivos">Noivos</option>
-              </select>
-
-              {userType === "noivos" && (
-                <>
-                  <label>Nome da Noiva(o) 1</label>
-                  {errors.partner1 && (
-                    <span className="text-red-500 text-xs ml-2">
-                      {errors.partner1}
-                    </span>
-                  )}
-                  <Inputs
-                    type="text"
-                    placeholder="Nome da noiva(o) 1"
-                    value={partner1}
-                    onChange={(e) => setPartner1(e.target.value)}
-                  />
-
-                  <label>Nome da Noiva(o) 2</label>
-                  {errors.partner2 && (
-                    <span className="text-red-500 text-xs ml-2">
-                      {errors.partner2}
-                    </span>
-                  )}
-                  <Inputs
-                    type="text"
-                    placeholder="Nome da noiva(o) 2"
-                    value={partner2}
-                    onChange={(e) => setPartner2(e.target.value)}
-                  />
-                </>
-              )}
-
-              <label>Senha</label>
-              {errors.password && (
-                <span className="text-red-500 text-xs ml-2">
-                  {errors.password}
-                </span>
-              )}
-              <Inputs
-                type="password"
-                placeholder="Insira sua Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-
-              <label>Confirme a senha</label>
-              {errors.confirmPass && (
-                <span className="text-red-500 text-xs ml-2">
-                  {errors.confirmPass}
-                </span>
-              )}
-              <Inputs
-                type="password"
-                placeholder="Confirme sua senha"
-                value={confirmPass}
-                onChange={(e) => setConfirm(e.target.value)}
-              />
-
-              <label>Data prevista do casamento</label>
-              {errors.date && (
-                <span className="text-red-500 text-xs ml-2">{errors.date}</span>
-              )}
-              <Inputs
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="bg-rose-500 rounded-lg p-2 w-full text-white font-semibold mt-4"
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block font-medium">Tipo de Usuário</label>
+            <select
+              name="tipo"
+              value={formData.tipo}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
             >
-              Criar Conta
-            </button>
-          </form>
-        </div>
+              <option value="">Selecione</option>
+              <option value="noivos">Noivos</option>
+              <option value="organizador">Organizador</option>
+              <option value="fornecedor">Fornecedor</option>
+            </select>
+            {errors.tipo && (
+              <p className="text-red-500 text-sm">{errors.tipo}</p>
+            )}
+          </div>
+
+          {formData.tipo === "noivos" && (
+            <>
+              <div>
+                <label className="block">Nome do Noivo</label>
+                <input
+                  type="text"
+                  name="noivo"
+                  value={formData.noivo}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+                {errors.noivo && (
+                  <p className="text-red-500 text-sm">{errors.noivo}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block">Nome da Noiva</label>
+                <input
+                  type="text"
+                  name="noiva"
+                  value={formData.noiva}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+                {errors.noiva && (
+                  <p className="text-red-500 text-sm">{errors.noiva}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block">Data do Casamento</label>
+                <input
+                  type="date"
+                  name="dataCasamento"
+                  value={formData.dataCasamento}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+                {errors.dataCasamento && (
+                  <p className="text-red-500 text-sm">{errors.dataCasamento}</p>
+                )}
+              </div>
+            </>
+          )}
+
+          {formData.tipo !== "noivos" && (
+            <div>
+              <label className="block">Nome Completo</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
+            </div>
+          )}
+
+          <div>
+            <label className="block">E-mail</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block">Senha</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold py-2 px-4 rounded"
+          >
+            Registrar
+          </button>
+        </form>
+
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Já tem uma conta?{" "}
+          <button
+            className="text-rose-500 hover:underline"
+            onClick={() => navigate("/login")}
+          >
+            Faça login
+          </button>
+        </p>
       </div>
     </div>
   );

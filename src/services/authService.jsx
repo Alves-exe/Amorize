@@ -1,8 +1,7 @@
-const USE_API = false; // ← Altere para true quando quiser usar o backend
-
+const USE_API = true; // ← Altere para true se quiser usar backend futuramente
 const API_URL = "http://localhost:5000/users";
 
-// REGISTRAR
+// REGISTRAR USUÁRIO
 export async function registerUser(userData) {
   if (USE_API) {
     const res = await fetch(API_URL, {
@@ -18,44 +17,55 @@ export async function registerUser(userData) {
     const exists = users.some((u) => u.email === userData.email);
     if (exists) throw new Error("Email já registrado");
 
-    users.push(userData); // ← Corrigido: Agora adiciona corretamente
+    users.push(userData); // salva o novo usuário
     localStorage.setItem("users", JSON.stringify(users));
 
-    console.log(
-      "Usuário salvo no localStorage:",
-      localStorage.getItem("users")
-    );
+    console.log("Usuário salvo no localStorage:", userData);
     return userData;
   }
 }
 
+// LOGIN DE USUÁRIO
 // LOGIN
 export async function loginUser({ email, password }) {
   console.log("Tentando logar com:", email, password);
-  console.log("Usuários antes do login:", localStorage.getItem("users"));
 
   if (USE_API) {
     const res = await fetch(API_URL);
     const users = await res.json();
-  } else {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    console.log("Usuários carregados do localStorage:", users);
-
-    // 🔥 Corrigido: Agora verifica corretamente o email e senha
     const user = users.find(
       (u) => u.email === email.trim() && u.password === password.trim()
     );
 
     if (!user) {
-      console.error("Erro no login: Email ou senha inválidos");
+      console.error("Login falhou: Email ou senha inválidos");
       throw new Error("Email ou senha inválidos");
     }
 
     const fakeToken = `${user.email}-token-${Date.now()}`;
     localStorage.setItem("token", fakeToken);
     localStorage.setItem("currentUser", JSON.stringify(user));
+    localStorage.setItem("userEmail", email); // ← SALVA O EMAIL
 
-    console.log("Usuário logado com sucesso:", user);
+    console.log("Login realizado com sucesso (API):", user);
+    return user;
+  } else {
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const user = users.find(
+      (u) => u.email === email.trim() && u.password === password.trim()
+    );
+
+    if (!user) {
+      console.error("Login falhou: Email ou senha inválidos");
+      throw new Error("Email ou senha inválidos");
+    }
+
+    const fakeToken = `${user.email}-token-${Date.now()}`;
+    localStorage.setItem("token", fakeToken);
+    localStorage.setItem("currentUser", JSON.stringify(user));
+    localStorage.setItem("userEmail", email); // ← SALVA O EMAIL
+
+    console.log("Login realizado com sucesso (localStorage):", user);
     return user;
   }
 }
@@ -66,7 +76,12 @@ export function logout() {
   localStorage.removeItem("currentUser");
 }
 
-// VERIFICAR LOGIN
+// VERIFICA SE ESTÁ LOGADO
 export function isLoggedIn() {
   return !!localStorage.getItem("token");
+}
+
+// PEGA USUÁRIO LOGADO
+export function getCurrentUser() {
+  return JSON.parse(localStorage.getItem("currentUser"));
 }

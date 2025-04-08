@@ -1,26 +1,25 @@
-const convidados = [
-  { nome: "João", confirmado: true },
-  { nome: "Maria", confirmado: false },
-  { nome: "Carlos", confirmado: true },
-  { nome: "Ana", confirmado: false },
-];
-const commitruim = 0;
-export function getConvidadosInfo() {
-  const total = convidados.length;
-  const confirmados = convidados.filter((c) => c.confirmado).length;
-  {
-    total, confirmados;
-  }
+import { useEffect, useState } from "react";
+import { getConvidadosByUserId } from "../api/convidados";
+
+export default function Convidados({ userId }) {
+  const [convidados, setConvidados] = useState([]);
+
+  useEffect(() => {
+    async function carregarConvidados() {
+      const data = await getConvidadosByUserId(userId);
+      setConvidados(data);
+    }
+
+    carregarConvidados();
+  }, [userId]); // <- userId é uma dependência válida
+
   return (
-    <div className="mt-6 justify-items-center">
-      <p className=" text-xl font-bold text-black">
-        {confirmados}/{total}
-      </p>
-      <h3 className="text-sm font-semibold text-gray-500">
-        Convidados confirmados
-      </h3>
+    <div>
+      {convidados.map((c, i) => (
+        <p key={i}>
+          {c.nome} - {c.confirmado ? "Confirmado" : "Pendente"}
+        </p>
+      ))}
     </div>
   );
 }
-
-export default convidados;

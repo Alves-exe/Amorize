@@ -1,111 +1,95 @@
 import { GoHeartFill } from "react-icons/go";
-import Inputs from "../components/Inputs";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { loginUser } from "../services/authService";
-
+import Input from "../components/Inputs";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const [errors, setErrors] = useState("");
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    let newErrors = {};
-
+    const newErrors = {};
     if (!email.trim()) newErrors.email = "Insira seu e-mail";
     if (!password.trim()) newErrors.password = "Insira sua senha";
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    setErrors({});
 
     try {
-      console.log("Chamando loginUser...");
       const user = await loginUser({ email, password });
-      console.log("Usuário logado com sucesso:", user);
+      console.log("Usuário logado:", user);
       navigate("/amorize");
     } catch (err) {
-      console.log("Erro no login:", err);
       setErrors({ email: err.message });
     }
   };
+
   return (
     <div className="flex flex-col min-h-screen justify-center items-center bg-gradient-to-br from-rose-50 to-slate-50 p-4">
-      <div className="rounded-lg outline-cyan-50 bg-card text-card-foreground shadow-sm w-full max-w-md">
-        <div className="flex flex-col p-6 space-y-1 text-center">
-          <div className="flex justify-center">
-            <GoHeartFill size={35} className="text-rose-500" />
-          </div>
-          <h1 className="font-semibold text-2xl tracking-tight">
-            Bem-vindo à Amorize
-          </h1>
-          <p className="text-gray-500 mt-3">
-            Entre com sua conta para continuar
-          </p>
-          <form onSubmit={handleLogin}>
-            <div className="justify-items-start space-y-2">
-              <div className="flex items-center">
-                <label htmlFor="email" className="mr-2">
-                  E-mail
-                </label>
-                {errors.email && (
-                  <span className="text-rose-500 text-xs">{errors.email}</span>
-                )}
-              </div>
-              <Inputs
-                type="email"
-                id="email"
-                placeholder="Insira seu e-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-
-              <div className="flex items-center">
-                <label htmlFor="senha" className="mr-2">
-                  Senha
-                </label>
-                {errors.password && (
-                  <span className="text-rose-500 text-xs">
-                    {errors.password}
-                  </span>
-                )}
-                <button
-                  onClick={() => navigate("/forgot")}
-                  className="text-sm ml-56 text-rose-600"
-                >
-                  Esqueceu a senha?
-                </button>
-              </div>
-              <Inputs
-                type="password"
-                id="senha"
-                placeholder="Insira sua senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <button
-              type="submit"
-              className="justify-center items-center bg-rose-500 rounded-lg p-2 mt-2 text-white w-full font-semibold"
-            >
-              Entrar
-            </button>
-          </form>
-          <h2 className="text-gray-500">
-            Não tem uma conta?{" "}
-            <button
-              onClick={() => navigate("/register")}
-              className="text-rose-500 ml-6"
-            >
-              Registre-se
-            </button>
-          </h2>
+      <div className="rounded-lg bg-white shadow-md p-6 w-full max-w-md">
+        <div className="flex flex-col items-center space-y-3 text-center">
+          <GoHeartFill size={35} className="text-rose-500" />
+          <h1 className="font-semibold text-2xl">Bem-vindo à Amorize</h1>
+          <p className="text-gray-500">Entre com sua conta para continuar</p>
         </div>
+        <form onSubmit={handleLogin} className="mt-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium">E-mail</label>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+            {errors.email && (
+              <p className="text-rose-500 text-sm">{errors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium">Senha</label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+            {errors.password && (
+              <p className="text-rose-500 text-sm">{errors.password}</p>
+            )}
+            <div className="text-right text-sm">
+              <button
+                type="button"
+                onClick={() => navigate("/forgot")}
+                className="text-rose-500"
+              >
+                Esqueceu a senha?
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-rose-500 text-white py-2 rounded"
+          >
+            Entrar
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-600 mt-4">
+          Não tem uma conta?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="text-rose-500 cursor-pointer"
+          >
+            Registre-se
+          </span>
+        </p>
       </div>
     </div>
   );

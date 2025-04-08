@@ -8,6 +8,7 @@ import {
   User,
 } from "lucide-react";
 import DateWed from "./DateWed";
+import ConvidadosPage from "./ConvidadosPage";
 
 function Menu({ setContent, dateWed, handleDashboardClick }) {
   const menuItems = [
@@ -18,16 +19,14 @@ function Menu({ setContent, dateWed, handleDashboardClick }) {
         title: "Olá, Name & Name2",
         description: <DateWed weddingDate={dateWed} />,
       },
-      onClick: handleDashboardClick, // Adicionando a função de clique aqui
+      onClick: handleDashboardClick,
     },
     {
       icon: <Users />,
       label: "Convidados",
-      content: {
-        title: "Convidados",
-        description: "Lista completa de convidados e status de confirmação.",
-      },
+      content: <ConvidadosPage />,
     },
+
     {
       icon: <CreditCard />,
       label: "Orçamento",
@@ -61,8 +60,8 @@ function Menu({ setContent, dateWed, handleDashboardClick }) {
           key={index}
           className="text-sm flex gap-5 text-black font-semibold hover:text-gray-400"
           onClick={() => {
-            setContent(item.content); // Atualiza o conteúdo
-            if (item.onClick) item.onClick(); // Chama a função de clique
+            setContent(item.content);
+            if (item.onClick) item.onClick();
           }}
         >
           {item.icon}
