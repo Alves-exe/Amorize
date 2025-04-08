@@ -92,7 +92,6 @@ function Register() {
               <option value="">Selecione</option>
               <option value="noivos">Noivos</option>
               <option value="organizador">Organizador</option>
-              <option value="fornecedor">Fornecedor</option>
             </select>
             {errors.tipo && (
               <p className="text-red-500 text-sm">{errors.tipo}</p>

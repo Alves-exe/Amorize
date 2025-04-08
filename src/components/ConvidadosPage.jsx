@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchConvidados, adicionarConvidado } from "../api/convidados";
+import { fetchConvidados, addConvidado } from "../api/api-convidados";
 
 function ConvidadosPage() {
   const [convidados, setConvidados] = useState([]);
@@ -20,7 +20,7 @@ function ConvidadosPage() {
   const handleAddConvidado = async () => {
     if (!novoConvidado.trim()) return;
 
-    await adicionarConvidado(user.id, {
+    await addConvidado(user.id, {
       nome: novoConvidado,
       confirmado: false,
     });

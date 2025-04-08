@@ -5,39 +5,42 @@ import Card from "../components/Card";
 import CardProgress from "../components/CardProgress";
 import Budget from "../components/Budget";
 import DateWed from "../components/DateWed";
-import { fetchConvidados } from "../api/convidados";
+import { fetchConvidados } from "../api/api-convidados";
 import { calcularProgresso } from "../utils/progressoHelper";
 
 function Dashboard() {
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const [content, setContent] = useState({
-    title: `Olá, ${user?.partner1 || "Nome"} & ${user?.partner2 || "Nome2"}`,
-    description: "Escolha uma opção no menu acima para visualizar o conteúdo.",
-  });
-
+  const user = JSON.parse(localStorage.getItem("currentUser")); // ← Corrigido aqui
+  const [content, setContent] = useState(null);
   const [showProgress, setShowProgress] = useState(false);
   const [convidados, setConvidados] = useState([]);
 
-  const tarefasConcluidas = 2;
+  const tarefasConcluidas = 1;
   const totalTarefas = 4;
 
   const carregarConvidados = useCallback(async () => {
     if (user?.id) {
       const lista = await fetchConvidados(user.id);
-      setConvidados(lista);
+      setConvidados(lista || []);
     }
   }, [user?.id]);
 
   useEffect(() => {
-    carregarConvidados();
-  }, [carregarConvidados]);
+    if (user) {
+      setContent({
+        title: `Olá, ${user.partner1} & ${user.partner2}`,
+        description:
+          "Escolha uma opção no menu acima para visualizar o conteúdo.",
+      });
+
+      carregarConvidados();
+    }
+  }, [user, carregarConvidados]);
 
   const handleDashboardClick = () => {
     setShowProgress(true);
     setContent({
-      title: `Olá, ${user?.partner1} & ${user?.partner2}`,
-      description: "", // Será substituído pelo DateWed
+      title: `Olá, ${user?.partner1 || "Nome"} & ${user?.partner2 || "Nome2"}`,
+      description: "",
     });
   };
 
@@ -49,9 +52,9 @@ function Dashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div>
       {/* Topo */}
-      <div className="flex justify-between items-center p-5">
+      <div className="flex justify-between p-5">
         <h1 className="flex items-center text-2xl font-bold text-black gap-3">
           <GoHeartFill size={35} className="text-rose-500" />
           Amorize
@@ -66,24 +69,29 @@ function Dashboard() {
 
       <hr className="opacity-25" />
 
-      {/* Cabeçalho com nome dos noivos */}
+      {/* Conteúdo principal */}
       <div className="p-5 text-lg font-medium text-gray-700">
-        <h2 className="text-2xl font-bold text-rose-500">
-          {user?.partner1} 💍 {user?.partner2}
-        </h2>
-
-        {showProgress ? (
-          <DateWed weddingDate={user?.weddingDate} />
+        {content && typeof content === "object" ? (
+          <>
+            <h2 className="text-2xl font-bold text-rose-500">
+              {user?.partner1} & {user?.partner2}
+            </h2>
+            {showProgress ? (
+              <DateWed weddingDate={user?.weddingDate} />
+            ) : (
+              <p className="text-gray-600 mt-2">{content.description}</p>
+            )}
+          </>
         ) : (
-          <p className="text-gray-500 mt-2">{content.description}</p>
+          content
         )}
       </div>
 
-      {/* Cards e Progresso */}
+      {/* Progresso e Cards */}
       {showProgress && (
         <>
           <CardProgress
-            title={"Progresso do Planejamento"}
+            title="Progresso do Planejamento"
             subtitle={`Você já completou ${progressValue}% das tarefas`}
             progressValue={progressValue}
             convidados={convidados}
@@ -95,7 +103,11 @@ function Dashboard() {
               title="Próximas tarefas"
               content="Aqui estão as tarefas pendentes do seu casamento."
             />
-            <Card title="Orçamento" content className="bg-blue-100" />
+            <Card
+              title="Orçamento"
+              content={<Budget />}
+              className="bg-blue-100"
+            />
             <Card
               title="Mensagens Recentes"
               content="Verifique suas mensagens recentes."

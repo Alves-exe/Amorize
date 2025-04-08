@@ -8,11 +8,7 @@
       "password": "admin",
       "weddingDate": "2025-04-10",
       "partner1": "JOAO",
-      "partner2": "MARIA",
-      "convidados": [
-        { "nome": "João", "confirmado": true },
-        { "nome": "Maria", "confirmado": false }
-      ]
+      "partner2": "MARIA"
     },
     {
       "id": "a906",
@@ -23,6 +19,27 @@
       "weddingDate": "2025-04-10",
       "partner1": "pedro",
       "partner2": "maria"
+    },
+    {
+      "id": "c35a",
+      "name": "alessandro & isabella",
+      "email": "admin3@amorize.com",
+      "userType": "noivos",
+      "password": "admin",
+      "weddingDate": "2025-04-10",
+      "partner1": "alessandro",
+      "partner2": "isabella"
+    },
+    {
+      "id": "28d5",
+      "name": "Silvio & Heribaldo",
+      "email": "admin4@amorize.com",
+      "userType": "noivos",
+      "password": "admin",
+      "weddingDate": "2025-04-10",
+      "partner1": "Silvio",
+      "partner2": "Heribaldo"
     }
-  ]
+  ],
+  "convidados": []
 }

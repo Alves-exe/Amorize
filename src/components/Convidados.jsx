@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getConvidadosByUserId } from "../api/convidados";
+import { getConvidadosByUserId } from "../api/api-convidados";
 
 export default function Convidados({ userId }) {
   const [convidados, setConvidados] = useState([]);
