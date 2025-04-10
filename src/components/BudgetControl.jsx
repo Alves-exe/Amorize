@@ -6,13 +6,13 @@ export default function BudgetControl({ onBudgetChange, userId }) {
   const [expenseName, setExpenseName] = useState("");
   const [expenseAmount, setExpenseAmount] = useState("");
 
+  // Carregar dados do localStorage
   useEffect(() => {
     if (userId) {
       const stored = localStorage.getItem(`budget_${userId}`);
       const parsed = stored ? JSON.parse(stored) : [];
       setExpenses(parsed);
 
-      // Carregar o orçamento total armazenado
       const storedBudget = localStorage.getItem(`total_budget_${userId}`);
       if (storedBudget) {
         setOrcamentoTotal(parseFloat(storedBudget));
@@ -20,18 +20,20 @@ export default function BudgetControl({ onBudgetChange, userId }) {
     }
   }, [userId]);
 
+  // Atualizar orçamento quando há mudanças
   useEffect(() => {
     if (onBudgetChange) {
       onBudgetChange({ usado: calculateUsedBudget(), total: orcamentoTotal });
     }
   }, [orcamentoTotal, expenses, onBudgetChange]);
 
+  // Calcular o orçamento utilizado
   const calculateUsedBudget = () => {
     return expenses.reduce((sum, expense) => sum + expense.amount, 0);
   };
 
+  // Adicionar uma nova despesa
   const handleAddExpense = () => {
-    // Garantir que os campos não estejam vazios e que o valor seja um número válido
     if (!expenseName.trim() || !expenseAmount || isNaN(expenseAmount)) {
       alert("Por favor, insira uma despesa válida.");
       return;
@@ -46,29 +48,28 @@ export default function BudgetControl({ onBudgetChange, userId }) {
     setExpenses(updatedExpenses);
     localStorage.setItem(`budget_${userId}`, JSON.stringify(updatedExpenses));
 
-    // Atualiza o orçamento usado
     if (onBudgetChange) {
       onBudgetChange({ usado: calculateUsedBudget(), total: orcamentoTotal });
     }
 
-    // Limpa os campos de entrada
     setExpenseName("");
     setExpenseAmount("");
   };
 
+  // Alterar o valor do orçamento total
   const handleBudgetChange = (event) => {
     const newBudget = parseFloat(event.target.value);
     setOrcamentoTotal(newBudget);
     localStorage.setItem(`total_budget_${userId}`, newBudget);
 
-    // Atualiza o orçamento total
     if (onBudgetChange) {
       onBudgetChange({ usado: calculateUsedBudget(), total: newBudget });
     }
   };
 
   return (
-    <div>
+    <div className="p-4">
+      {/* Definindo Orçamento Total */}
       <div className="mb-4">
         <input
           type="number"
@@ -79,6 +80,7 @@ export default function BudgetControl({ onBudgetChange, userId }) {
         />
       </div>
 
+      {/* Adicionar Despesas */}
       <div className="mb-4">
         <input
           type="text"
@@ -101,21 +103,42 @@ export default function BudgetControl({ onBudgetChange, userId }) {
 
       <button
         onClick={handleAddExpense}
-        className="mt-2 bg-blue-500 text-white p-2 rounded w-full"
+        className="mt-2 bg-rose-500 text-white p-2 rounded w-full"
       >
         Adicionar Despesa
       </button>
 
+      {/* Exibindo Resumo do Orçamento */}
+      <div className="mt-6">
+        <h3 className="font-bold text-lg">Resumo do Orçamento:</h3>
+        <div className="mt-2">
+          <p>
+            <strong>Total do Orçamento:</strong> R$ {orcamentoTotal}
+          </p>
+          <p>
+            <strong>Total Gasto:</strong> R$ {calculateUsedBudget()}
+          </p>
+          <p>
+            <strong>Saldo Restante:</strong> R${" "}
+            {orcamentoTotal - calculateUsedBudget()}
+          </p>
+        </div>
+      </div>
+
+      {/* Relatório de Despesas */}
       <div className="mt-6">
         <h3 className="font-bold">Despesas:</h3>
-        <ul>
-          {expenses.map((expense) => (
-            <li key={expense.id} className="flex justify-between">
-              <span>
-                {expense.name} - R$ {expense.amount}
-              </span>
-            </li>
-          ))}
+        <ul className="mt-2">
+          {expenses.length > 0 ? (
+            expenses.map((expense) => (
+              <li key={expense.id} className="flex justify-between mt-1">
+                <span>{expense.name}</span>
+                <span>R$ {expense.amount}</span>
+              </li>
+            ))
+          ) : (
+            <p className="text-gray-500">Nenhuma despesa registrada.</p>
+          )}
         </ul>
       </div>
     </div>
