@@ -1,3 +1,5 @@
+import { CreditCardIcon } from "lucide-react";
+
 export default function CardProgress({
   title,
   progressValue,
@@ -35,6 +37,7 @@ export default function CardProgress({
       {/* Detalhes do orçamento */}
       <div className="text-sm text-gray-500">
         <p>
+          <CreditCardIcon />
           Orçamento: <strong>{formatCurrency(orcamentoGasto)}</strong> de{" "}
           {formatCurrency(orcamentoTotal)}
         </p>
