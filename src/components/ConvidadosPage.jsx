@@ -26,7 +26,7 @@ function ConvidadosPage() {
     });
 
     setNovoConvidado("");
-    carregar(); // recarrega a lista após adicionar
+    carregar();
   };
 
   return (

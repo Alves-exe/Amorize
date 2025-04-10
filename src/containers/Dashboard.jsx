@@ -4,6 +4,7 @@ import Card from "../components/Card";
 import CardProgress from "../components/CardProgress";
 import BudgetControl from "../components/BudgetControl";
 import DateWed from "../components/DateWed";
+import Calendar from "../components/Calendar";
 import { fetchConvidados } from "../api/api-convidados";
 import { calcularProgresso } from "../utils/progressoHelper";
 import TasksCardLocal from "../components/TasksCardLocal";
@@ -134,6 +135,7 @@ function Dashboard() {
                 />
               </div>
             )}
+            {content?.calendar && <Calendar weddingDate={user?.weddingDate} />}
           </div>
         )}
       </div>

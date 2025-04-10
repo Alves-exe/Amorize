@@ -8,7 +8,6 @@ import {
   User,
   DollarSign,
 } from "lucide-react";
-import { GoHeartFill } from "react-icons/go";
 
 function Sidebar({ setContent, handleDashboardClick }) {
   const [user, setUser] = useState(null);
@@ -54,6 +53,7 @@ function Sidebar({ setContent, handleDashboardClick }) {
         setContent({
           title: "Agenda",
           description: "Veja seus eventos programados.",
+          calendar: true, // Adicionando um identificador para a agenda
         }),
     },
     {

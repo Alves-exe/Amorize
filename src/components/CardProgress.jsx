@@ -4,10 +4,9 @@ export default function CardProgress({
   orcamentoGasto,
   orcamentoTotal,
 }) {
-  // Função para formatar valores monetários
   const formatCurrency = (value) => {
     if (value === undefined || value === null || isNaN(value)) {
-      return "R$ 0,00"; // Caso o valor seja inválido, retorna um valor padrão
+      return "R$ 0,00";
     }
     return value.toLocaleString("pt-BR", {
       style: "currency",
@@ -15,8 +14,7 @@ export default function CardProgress({
     });
   };
 
-  // Cor da barra de progresso fixada como "rose-600"
-  const progressBarColor = "bg-rose-600";
+  const progressBarColor = "bg-rose-500";
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-3xl">
@@ -32,14 +30,6 @@ export default function CardProgress({
           }}
           aria-label={`Progresso: ${progressValue}%`}
         ></div>
-
-        {/* Exibindo a porcentagem acima da barra */}
-        <div
-          className="absolute top-[-20px] left-1/2 transform -translate-x-1/2 text-white font-semibold"
-          style={{ fontSize: "0.875rem" }} // Tamanho da fonte ajustável
-        >
-          {progressValue}%
-        </div>
       </div>
 
       {/* Detalhes do orçamento */}
