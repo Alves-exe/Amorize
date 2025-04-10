@@ -42,34 +42,51 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
+    const tipoMap = {
+      noivos: formData.noiva ? "NOIVA" : "NOIVO", // alterna dinamicamente
+      organizador: "FORNECEDOR",
+    };
+
+    const payload = {
+      name:
+        formData.tipo === "noivos"
+          ? `${formData.noivo} & ${formData.noiva}`
+          : formData.name || "",
+
+      email: formData.email,
+      password: formData.password,
+
+      userType: tipoMap[formData.tipo],
+
+      weddingDate:
+        formData.tipo === "noivos" && formData.dataCasamento
+          ? formData.dataCasamento
+          : null,
+
+      partner1: formData.tipo === "noivos" ? formData.noivo : "",
+      partner2: formData.tipo === "noivos" ? formData.noiva : "",
+    };
+
     try {
-      const payload = {
-        name:
-          formData.tipo === "noivos"
-            ? `${formData.noivo} & ${formData.noiva}`
-            : formData.name || "",
-
-        email: formData.email,
-        userType: formData.tipo,
-        password: formData.password,
-
-        weddingDate: formData.tipo === "noivos" ? formData.dataCasamento : null,
-        partner1: formData.tipo === "noivos" ? formData.noivo : "",
-        partner2: formData.tipo === "noivos" ? formData.noiva : "",
-      };
-
-      const response = await axios.post("http://localhost:5000/users", payload);
-      console.log("Usuário registrado:", response.data);
-      navigate("/login");
-    } catch (err) {
-      console.error("Erro ao registrar:", err);
-      setErrors({ email: "Erro ao registrar usuário" });
+      const response = await axios.post(
+        "http://localhost:8080/api/auth/register",
+        payload
+      );
+      console.log("Usuário registrado com sucesso:", response.data);
+      navigate("/login"); // redirecionar após cadastro
+    } catch (error) {
+      console.error("Erro ao registrar:", error);
+      if (error.response?.data) {
+        alert("Erro: " + JSON.stringify(error.response.data));
+      } else {
+        alert("Erro ao registrar. Verifique sua conexão e os dados.");
+      }
     }
   };
 

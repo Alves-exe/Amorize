@@ -1,21 +1,31 @@
 import { useEffect, useState, useCallback } from "react";
-import { GoHeartFill } from "react-icons/go";
-import Menu from "../components/Menu";
+import Sidebar from "../components/Sidebar";
 import Card from "../components/Card";
 import CardProgress from "../components/CardProgress";
-import Budget from "../components/Budget";
+import BudgetControl from "../components/BudgetControl";
 import DateWed from "../components/DateWed";
 import { fetchConvidados } from "../api/api-convidados";
 import { calcularProgresso } from "../utils/progressoHelper";
+import TasksCardLocal from "../components/TasksCardLocal";
 
 function Dashboard() {
-  const user = JSON.parse(localStorage.getItem("currentUser")); // ← Corrigido aqui
+  const [user, setUser] = useState(null);
   const [content, setContent] = useState(null);
-  const [showProgress, setShowProgress] = useState(false);
+  const [showProgress, setShowProgress] = useState(true);
   const [convidados, setConvidados] = useState([]);
+  const [tarefasConcluidas, setTarefasConcluidas] = useState(0);
+  const [totalTarefas, setTotalTarefas] = useState(0);
+  const [orcamentoInfo, setOrcamentoInfo] = useState({ usado: 0, total: 0 });
 
-  const tarefasConcluidas = 1;
-  const totalTarefas = 4;
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("currentUser");
+      const parsedUser = stored ? JSON.parse(stored) : null;
+      setUser(parsedUser);
+    } catch (err) {
+      console.error("Erro ao carregar usuário:", err);
+    }
+  }, []);
 
   const carregarConvidados = useCallback(async () => {
     if (user?.id) {
@@ -26,95 +36,107 @@ function Dashboard() {
 
   useEffect(() => {
     if (user) {
-      setContent({
-        title: `Olá, ${user.partner1} & ${user.partner2}`,
-        description:
-          "Escolha uma opção no menu acima para visualizar o conteúdo.",
-      });
-
       carregarConvidados();
     }
   }, [user, carregarConvidados]);
 
   const handleDashboardClick = () => {
     setShowProgress(true);
-    setContent({
-      title: `Olá, ${user?.partner1 || "Nome"} & ${user?.partner2 || "Nome2"}`,
-      description: "",
-    });
+    setContent(null);
+  };
+
+  const resetAndSetContent = (newContent) => {
+    setShowProgress(false);
+    setContent(newContent);
+  };
+
+  const handleTaskProgress = (done, total) => {
+    setTarefasConcluidas(done);
+    setTotalTarefas(total);
+  };
+
+  const handleBudgetChange = (orcamento) => {
+    setOrcamentoInfo(orcamento);
   };
 
   const progressValue = calcularProgresso(
     convidados,
-    15000,
+    orcamentoInfo.total,
+    orcamentoInfo.usado,
     tarefasConcluidas,
     totalTarefas
   );
 
   return (
-    <div>
-      {/* Topo */}
-      <div className="flex justify-between p-5">
-        <h1 className="flex items-center text-2xl font-bold text-black gap-3">
-          <GoHeartFill size={35} className="text-rose-500" />
-          Amorize
-        </h1>
+    <div className="flex h-screen">
+      <Sidebar
+        setContent={resetAndSetContent}
+        handleDashboardClick={handleDashboardClick}
+        dateWed={user?.weddingDate}
+      />
 
-        <Menu
-          setContent={setContent}
-          handleDashboardClick={handleDashboardClick}
-          dateWed={user?.weddingDate}
-        />
-      </div>
-
-      <hr className="opacity-25" />
-
-      {/* Conteúdo principal */}
-      <div className="p-5 text-lg font-medium text-gray-700">
-        {content && typeof content === "object" ? (
-          <>
+      <div className="flex-1 p-8 overflow-y-auto">
+        {user && (
+          <div className="mb-6">
             <h2 className="text-2xl font-bold text-rose-500">
-              {user?.partner1} & {user?.partner2}
+              {user.partner1} & {user.partner2}
             </h2>
-            {showProgress ? (
-              <DateWed weddingDate={user?.weddingDate} />
-            ) : (
-              <p className="text-gray-600 mt-2">{content.description}</p>
-            )}
+            <DateWed weddingDate={user.weddingDate} />
+          </div>
+        )}
+
+        {showProgress && (
+          <>
+            <CardProgress
+              title="Progresso do Planejamento"
+              subtitle={`Você já completou ${progressValue}% das tarefas`}
+              progressValue={progressValue}
+              usados={orcamentoInfo.usado}
+              total={orcamentoInfo.total}
+            />
+
+            <div className="flex justify-center items-start gap-5 mt-10 flex-wrap">
+              <Card
+                title="Tarefas Pendentes"
+                content={
+                  <TasksCardLocal onProgressUpdate={handleTaskProgress} />
+                }
+              />
+              <Card
+                title="Orçamento"
+                content={
+                  <BudgetControl
+                    onBudgetChange={handleBudgetChange}
+                    userId={user?.id}
+                  />
+                }
+              />
+              <Card
+                title="Mensagens Recentes"
+                content="Verifique suas mensagens recentes."
+              />
+            </div>
           </>
-        ) : (
-          content
+        )}
+
+        {!showProgress && content && (
+          <div className="mt-6">
+            <h2 className="text-2xl font-bold text-rose-600">
+              {content.title}
+            </h2>
+            <p className="text-gray-600 mt-2">{content.description}</p>
+
+            {content.title === "Orçamento" && (
+              <div className="mt-6">
+                <BudgetControl
+                  onBudgetChange={handleBudgetChange}
+                  userId={user?.id}
+                />
+              </div>
+            )}
+          </div>
         )}
       </div>
-
-      {/* Progresso e Cards */}
-      {showProgress && (
-        <>
-          <CardProgress
-            title="Progresso do Planejamento"
-            subtitle={`Você já completou ${progressValue}% das tarefas`}
-            progressValue={progressValue}
-            convidados={convidados}
-            budget={<Budget />}
-          />
-
-          <div className="flex justify-center items-center gap-5 mt-20 flex-wrap">
-            <Card
-              title="Próximas tarefas"
-              content="Aqui estão as tarefas pendentes do seu casamento."
-            />
-            <Card
-              title="Orçamento"
-              content={<Budget />}
-              className="bg-blue-100"
-            />
-            <Card
-              title="Mensagens Recentes"
-              content="Verifique suas mensagens recentes."
-            />
-          </div>
-        </>
-      )}
     </div>
   );
 }

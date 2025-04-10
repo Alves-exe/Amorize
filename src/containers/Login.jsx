@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { loginUser } from "../services/authService";
 import Input from "../components/Inputs";
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

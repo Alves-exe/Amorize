@@ -1,56 +1,53 @@
-import { GoHeartFill } from "react-icons/go";
-import { FaMoneyBillWave } from "react-icons/fa";
-
 export default function CardProgress({
   title,
-  subtitle,
-  convidados,
-  budget,
   progressValue,
-  className,
+  orcamentoGasto,
+  orcamentoTotal,
 }) {
-  const total = convidados.length;
-  const confirmados = convidados.filter((c) => c.confirmado).length;
+  // Função para formatar valores monetários
+  const formatCurrency = (value) => {
+    if (value === undefined || value === null || isNaN(value)) {
+      return "R$ 0,00"; // Caso o valor seja inválido, retorna um valor padrão
+    }
+    return value.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  };
+
+  // Cor da barra de progresso fixada como "rose-600"
+  const progressBarColor = "bg-rose-600";
 
   return (
-    <div
-      className={`bg-white shadow-lg border border-rose-200 rounded-2xl p-6 max-w-full mx-10 md:mx-32 ${className}`}
-    >
-      {/* Título e subtítulo */}
-      {title && <h2 className="text-2xl font-bold text-rose-600">{title}</h2>}
-      {subtitle && (
-        <p className="text-sm font-medium text-gray-500 mt-1">{subtitle}</p>
-      )}
+    <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-3xl">
+      <h2 className="text-xl font-bold text-rose-600 mb-2">{title}</h2>
 
       {/* Barra de progresso */}
-      <div className="mt-4">
-        <div className="relative w-full h-4 rounded-full bg-gray-200 overflow-hidden">
-          <div
-            className="h-full bg-rose-500 rounded-full transition-all duration-500"
-            style={{ width: `${progressValue}%` }}
-          />
+      <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-2 relative">
+        <div
+          className={`${progressBarColor} h-full transition-all`}
+          style={{
+            width: `${progressValue}%`,
+            transition: "width 0.5s ease-in-out",
+          }}
+          aria-label={`Progresso: ${progressValue}%`}
+        ></div>
+
+        {/* Exibindo a porcentagem acima da barra */}
+        <div
+          className="absolute top-[-20px] left-1/2 transform -translate-x-1/2 text-white font-semibold"
+          style={{ fontSize: "0.875rem" }} // Tamanho da fonte ajustável
+        >
+          {progressValue}%
         </div>
-        <p className="text-right text-xs text-gray-500 mt-1">
-          {progressValue}% concluído
-        </p>
       </div>
 
-      {/* Informações adicionais */}
-      <div className="flex flex-wrap justify-around items-center mt-6 gap-10 text-center">
-        {/* Convidados */}
-        <div className="flex flex-col items-center">
-          <GoHeartFill size={28} className="text-rose-500 mb-1" />
-          <p className="text-xl font-bold text-black">
-            {confirmados}/{total}
-          </p>
-          <p className="text-sm text-gray-500">Convidados confirmados</p>
-        </div>
-
-        {/* Orçamento (recebido como componente) */}
-        <div className="flex flex-col items-center">
-          <FaMoneyBillWave size={28} className="text-blue-400 mb-1" />
-          {budget}
-        </div>
+      {/* Detalhes do orçamento */}
+      <div className="text-sm text-gray-500">
+        <p>
+          Orçamento: <strong>{formatCurrency(orcamentoGasto)}</strong> de{" "}
+          {formatCurrency(orcamentoTotal)}
+        </p>
       </div>
     </div>
   );
