@@ -19,7 +19,7 @@ export default function CardProgress({
   const progressBarColor = "bg-rose-500";
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-3xl">
+    <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-full">
       <h2 className="text-xl font-bold text-rose-600 mb-2">{title}</h2>
 
       {/* Barra de progresso */}
