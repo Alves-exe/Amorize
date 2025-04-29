@@ -73,28 +73,32 @@ function Sidebar({ setContent, handleDashboardClick }) {
   ];
 
   return (
-    <div className="bg-white w-64 p-6 border-r shadow-md">
-      <h1 className="text-2xl font-bold  text-rose-500 mb-6">❤ Amorize</h1>
+    <div className="bg-white p-6 inline-flex shadow-md w-screen">
+      <h1 className="text-2xl font-bold  text-rose-500 ml-6">❤ Amorize</h1>
 
-      <div className="space-y-4">
+      <div className="flex flex-inline space-x-9 ">
         {menuItems.map(({ icon, label, onClick }, i) => (
           <button
             key={i}
-            className="w-full flex items-center gap-2 text-left hover:text-rose-500 font-medium"
+            className="flex items-center gap-2 text-left ml-6 hover:text-rose-500 font-medium"
             onClick={onClick}
           >
             {icon}
             {label}
           </button>
         ))}
-      </div>
-
-      <div className="absolute bottom-6 left-6 space-x-4">
-        {extraIcons.map(({ icon, label }, i) => (
-          <button key={i} className="hover:text-rose-500" title={label}>
-            {icon}
-          </button>
-        ))}
+        <div className="ml-52 inline-flex">
+          {extraIcons.map(({ icon, label }, i) => (
+            <button
+              key={i}
+              className="flex items-center gap-2 text-left ml-6 hover:text-rose-500 font-medium"
+              title={label}
+            >
+              {icon}
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

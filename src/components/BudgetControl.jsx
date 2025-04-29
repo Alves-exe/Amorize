@@ -76,7 +76,7 @@ export default function BudgetControl({ onBudgetChange, userId }) {
           value={orcamentoTotal}
           onChange={handleBudgetChange}
           placeholder="Defina o Orçamento Total"
-          className="border p-2 rounded w-full"
+          className="border p-2 rounded"
         />
       </div>
 
@@ -87,7 +87,7 @@ export default function BudgetControl({ onBudgetChange, userId }) {
           value={expenseName}
           onChange={(e) => setExpenseName(e.target.value)}
           placeholder="Nome da Despesa"
-          className="border p-2 rounded w-full"
+          className="border p-2 rounded "
         />
       </div>
 
@@ -97,13 +97,13 @@ export default function BudgetControl({ onBudgetChange, userId }) {
           value={expenseAmount}
           onChange={(e) => setExpenseAmount(e.target.value)}
           placeholder="Valor da Despesa"
-          className="border p-2 rounded w-full"
+          className="border p-2 rounded"
         />
       </div>
 
       <button
         onClick={handleAddExpense}
-        className="mt-2 bg-rose-500 text-white p-2 rounded w-full"
+        className="mt-2 bg-rose-500 text-white p-2 rounded "
       >
         Adicionar Despesa
       </button>

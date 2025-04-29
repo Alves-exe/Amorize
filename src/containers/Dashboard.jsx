@@ -69,7 +69,7 @@ function Dashboard() {
   );
 
   return (
-    <div className="flex h-screen">
+    <div className="h-screen">
       <Sidebar
         setContent={resetAndSetContent}
         handleDashboardClick={handleDashboardClick}
