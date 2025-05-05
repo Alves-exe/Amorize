@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 
-const Calendar = () => {
+const Calendar = ({ onAddTask }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [taskName, setTaskName] = useState("");
 
   // Função para obter o nome do mês
   const getCurrentMonth = () => {
@@ -67,6 +70,20 @@ const Calendar = () => {
     }
   };
 
+  const handleDayClick = (day) => {
+    setSelectedDay(day);
+    setIsModalOpen(true);
+  };
+
+  const handleTaskSubmit = () => {
+    if (taskName.trim()) {
+      // Passando a tarefa para o componente pai (TasksCardLocal)
+      onAddTask({ day: selectedDay, name: taskName });
+      setTaskName("");
+      setIsModalOpen(false);
+    }
+  };
+
   const days = generateCalendar();
 
   return (
@@ -90,7 +107,6 @@ const Calendar = () => {
       </div>
 
       {/*dias da semana*/}
-
       <div className="grid grid-cols-7 gap-2 text-center mb-4">
         <div className="font-semibold text-sm text-rose-400">Dom</div>
         <div className="font-semibold text-sm text-rose-400">Seg</div>
@@ -102,7 +118,6 @@ const Calendar = () => {
       </div>
 
       {/*dias do mes e o bg*/}
-
       <div className="grid grid-cols-7 gap-2">
         {days.map((day, index) => (
           <div
@@ -112,11 +127,42 @@ const Calendar = () => {
                 ? "text-center cursor-pointer border border-rose-400 rounded-lg hover:bg-rose-100"
                 : "text-transparent"
             }`}
+            onClick={() => day && handleDayClick(day)}
           >
             {day && <span className="text-sm text-gray-800">{day}</span>}
           </div>
         ))}
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-10">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <h3 className="text-lg font-bold mb-4">Adicionar Tarefa</h3>
+            <input
+              type="text"
+              className="border border-rose-400 p-2 rounded mb-4 w-full"
+              placeholder="Nome da tarefa"
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+            />
+            <div className="flex justify-between">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="bg-gray-300 text-black px-4 py-2 rounded"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleTaskSubmit}
+                className="bg-rose-500 text-white px-4 py-2 rounded"
+              >
+                Adicionar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

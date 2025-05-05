@@ -18,13 +18,11 @@ function DateWed({ weddingDate }) {
   }, [weddingDate]);
 
   return (
-    <div className="mt-3 bg-pink-50 p-4 rounded-xl shadow-sm">
+    <div className="">
       <p className="text-gray-700 font-medium">
-        Data do casamento:{" "}
-        <span className="font-bold text-rose-500">{weddingDate}</span>
-      </p>
-      <p className="text-sm text-gray-500">
-        Faltam <strong>{diasRestantes}</strong> dias para o grande dia!
+        Seu casamento está previsto para {""}
+        <span className="font-semibold text-rose-500">{weddingDate}</span>(
+        {diasRestantes} dias restantes)
       </p>
     </div>
   );

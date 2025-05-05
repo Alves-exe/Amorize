@@ -1,9 +1,7 @@
-import { CreditCardIcon } from "lucide-react";
-
 export default function CardProgress({
   title,
   progressValue,
-  orcamentoGasto,
+
   orcamentoTotal,
 }) {
   const formatCurrency = (value) => {
@@ -19,11 +17,12 @@ export default function CardProgress({
   const progressBarColor = "bg-rose-500";
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-full">
-      <h2 className="text-xl font-bold text-rose-600 mb-2">{title}</h2>
+    <div className="bg-white drop-shadow-2xl rounded-xl mt-22 ml-50 p-6">
+      <h2 className="text-xl font-bold text-black">{title}</h2>
+      <p className="text-gray-600 mb-2">{`Você já completou ${progressValue}% das tarefas`}</p>
 
       {/* Barra de progresso */}
-      <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-2 relative">
+      <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-2 relative">
         <div
           className={`${progressBarColor} h-full transition-all`}
           style={{
@@ -35,11 +34,10 @@ export default function CardProgress({
       </div>
 
       {/* Detalhes do orçamento */}
-      <div className="text-sm text-gray-500">
+      <div className="text-xl ml-72 mt-2 inline-flex text-black font-medium">
         <p>
-          <CreditCardIcon />
-          Orçamento: <strong>{formatCurrency(orcamentoGasto)}</strong> de{" "}
-          {formatCurrency(orcamentoTotal)}
+          <strong>{formatCurrency(orcamentoTotal)}</strong>
+          <p className="text-sm ml-2 text-gray-500">Orçamento Total</p>
         </p>
       </div>
     </div>

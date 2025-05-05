@@ -8,6 +8,7 @@ import Calendar from "../components/Calendar";
 import { fetchConvidados } from "../api/api-convidados";
 import { calcularProgresso } from "../utils/progressoHelper";
 import TasksCardLocal from "../components/TasksCardLocal";
+import BudgetSummary from "../components/BudgetSummary";
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -27,6 +28,24 @@ function Dashboard() {
       console.error("Erro ao carregar usuário:", err);
     }
   }, []);
+
+  // ⬇️ Carregar orçamento inicial do localStorage assim que o usuário estiver disponível
+  useEffect(() => {
+    if (user?.id) {
+      const storedExpenses = localStorage.getItem(`budget_${user.id}`);
+      const expenses = storedExpenses ? JSON.parse(storedExpenses) : [];
+
+      const totalUsed = expenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
+
+      const storedTotal = localStorage.getItem(`total_budget_${user.id}`);
+      const total = storedTotal ? parseFloat(storedTotal) : 0;
+
+      setOrcamentoInfo({ usado: totalUsed, total });
+    }
+  }, [user]);
 
   const carregarConvidados = useCallback(async () => {
     if (user?.id) {
@@ -76,13 +95,15 @@ function Dashboard() {
         dateWed={user?.weddingDate}
       />
 
-      <div className="flex-1 p-8 overflow-y-auto">
+      <div className="flex-col">
         {user && (
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-rose-500">
-              {user.partner1} & {user.partner2}
+          <div className="mt-6 ml-6 items-center">
+            <h2 className="text-3xl ml-3 font-bold text-black">
+              Olá, {user.partner1} e {user.partner2}
             </h2>
-            <DateWed weddingDate={user.weddingDate} />
+            <p className="ml-3">
+              <DateWed weddingDate={user.weddingDate} />
+            </p>
           </div>
         )}
 
@@ -92,8 +113,8 @@ function Dashboard() {
               title="Progresso do Planejamento"
               subtitle={`Você já completou ${progressValue}% das tarefas`}
               progressValue={progressValue}
-              usados={orcamentoInfo.usado}
-              total={orcamentoInfo.total}
+              orcamentoGasto={orcamentoInfo.usado}
+              orcamentoTotal={orcamentoInfo.total}
             />
 
             <div className="flex justify-center items-start gap-5 mt-10 flex-wrap">
@@ -106,7 +127,9 @@ function Dashboard() {
               <Card
                 title="Orçamento"
                 content={
-                  <BudgetControl
+                  <BudgetSummary
+                    total={orcamentoInfo.total}
+                    usado={orcamentoInfo.usado}
                     onBudgetChange={handleBudgetChange}
                     userId={user?.id}
                   />
@@ -121,7 +144,7 @@ function Dashboard() {
         )}
 
         {!showProgress && content && (
-          <div className="mt-6">
+          <div className="mt-6 ml-28">
             <h2 className="text-2xl font-bold text-rose-600">
               {content.title}
             </h2>

@@ -73,8 +73,8 @@ function Sidebar({ setContent, handleDashboardClick }) {
   ];
 
   return (
-    <div className="bg-white p-6 inline-flex shadow-md w-screen">
-      <h1 className="text-2xl font-bold  text-rose-500 ml-6">❤ Amorize</h1>
+    <div className="p-4 inline-flex shadow-lg w-screen">
+      <h1 className="text-2xl font-bold text-rose-500 ml-6">❤Amorize</h1>
 
       <div className="flex flex-inline space-x-9 ">
         {menuItems.map(({ icon, label, onClick }, i) => (
@@ -95,7 +95,6 @@ function Sidebar({ setContent, handleDashboardClick }) {
               title={label}
             >
               {icon}
-              {label}
             </button>
           ))}
         </div>
