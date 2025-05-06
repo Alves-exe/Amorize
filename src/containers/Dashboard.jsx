@@ -125,6 +125,7 @@ function Dashboard() {
               />
               <Card
                 title="Orçamento"
+                icon={<ChartPie size={30} className="inline-flex ml-52" />}
                 content={
                   <BudgetSummary
                     total={orcamentoInfo.total}

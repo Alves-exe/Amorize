@@ -108,30 +108,13 @@ export default function BudgetControl({ onBudgetChange, userId }) {
         Adicionar Despesa
       </button>
 
-      {/* Exibindo Resumo do Orçamento */}
-      <div className="mt-6">
-        <h3 className="font-bold text-lg">Resumo do Orçamento:</h3>
-        <div className="mt-2">
-          <p>
-            <strong>Total do Orçamento:</strong> R$ {orcamentoTotal}
-          </p>
-          <p>
-            <strong>Total Gasto:</strong> R$ {calculateUsedBudget()}
-          </p>
-          <p>
-            <strong>Saldo Restante:</strong> R${" "}
-            {orcamentoTotal - calculateUsedBudget()}
-          </p>
-        </div>
-      </div>
-
       {/* Relatório de Despesas */}
-      <div className="mt-6">
+      <div className="mt-6 ">
         <h3 className="font-bold">Despesas:</h3>
         <ul className="mt-2">
           {expenses.length > 0 ? (
             expenses.map((expense) => (
-              <li key={expense.id} className="flex bg-rose-200 p-2 mt-1">
+              <li key={expense.id} className="flex p-2 mt-1">
                 <span className="font-semibold">{expense.name}</span>
                 <span className="ml-4">R${expense.amount}</span>
               </li>
