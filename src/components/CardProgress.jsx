@@ -1,7 +1,7 @@
 export default function CardProgress({
   title,
   progressValue,
-
+  tasks,
   orcamentoTotal,
 }) {
   const formatCurrency = (value) => {
@@ -34,8 +34,12 @@ export default function CardProgress({
       </div>
 
       {/* Detalhes do orçamento */}
-      <div className="text-xl ml-72 mt-2 inline-flex text-black font-medium">
-        <p>
+      <div className="text-xl mt-2 inline-flex text-black font-medium">
+        <p className="ml-5">
+          <strong>TASKS</strong>
+          <p className="text-sm ml-2 text-gray-500">Tarefas Incompletas</p>
+        </p>
+        <p className="ml-72">
           <strong>{formatCurrency(orcamentoTotal)}</strong>
           <p className="text-sm ml-2 text-gray-500">Orçamento Total</p>
         </p>

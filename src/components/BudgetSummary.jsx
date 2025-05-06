@@ -16,6 +16,10 @@ export default function BudgetSummary({ total = 0, usado = 0 }) {
         <p>
           <strong>Saldo Restante:</strong> R$ {saldo.toFixed(2)}
         </p>
+        <p>
+          <strong>Porcentagem Gasta:</strong>{" "}
+          {totalNum > 0 ? ((usadoNum / totalNum) * 100).toFixed(2) : 0}%
+        </p>
       </div>
     </div>
   );

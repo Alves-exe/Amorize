@@ -131,9 +131,9 @@ export default function BudgetControl({ onBudgetChange, userId }) {
         <ul className="mt-2">
           {expenses.length > 0 ? (
             expenses.map((expense) => (
-              <li key={expense.id} className="flex justify-between mt-1">
-                <span>{expense.name}</span>
-                <span>R$ {expense.amount}</span>
+              <li key={expense.id} className="flex bg-rose-200 p-2 mt-1">
+                <span className="font-semibold">{expense.name}</span>
+                <span className="ml-4">R${expense.amount}</span>
               </li>
             ))
           ) : (

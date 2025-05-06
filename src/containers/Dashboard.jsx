@@ -9,7 +9,7 @@ import { fetchConvidados } from "../api/api-convidados";
 import { calcularProgresso } from "../utils/progressoHelper";
 import TasksCardLocal from "../components/TasksCardLocal";
 import BudgetSummary from "../components/BudgetSummary";
-
+import { ChartPie } from "lucide-react";
 function Dashboard() {
   const [user, setUser] = useState(null);
   const [content, setContent] = useState(null);
@@ -113,7 +113,6 @@ function Dashboard() {
               title="Progresso do Planejamento"
               subtitle={`Você já completou ${progressValue}% das tarefas`}
               progressValue={progressValue}
-              orcamentoGasto={orcamentoInfo.usado}
               orcamentoTotal={orcamentoInfo.total}
             />
 
@@ -135,6 +134,7 @@ function Dashboard() {
                   />
                 }
               />
+
               <Card
                 title="Mensagens Recentes"
                 content="Verifique suas mensagens recentes."
