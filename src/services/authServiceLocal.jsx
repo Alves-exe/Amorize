@@ -1,66 +1,48 @@
-// authService.js (versão localStorage)
+// src/services/authServiceLocal.js
 
-// REGISTRO
-export async function registerUser(userData) {
+const USERS_KEY = "amorize_users";
+const CURRENT_USER_KEY = "amorize_current_user";
+
+export function registerUser(data) {
   return new Promise((resolve, reject) => {
-    try {
-      const users = JSON.parse(localStorage.getItem("users")) || [];
+    const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
 
-      const userExists = users.find((user) => user.email === userData.email);
-      if (userExists) {
-        return reject(new Error("Usuário já existe."));
-      }
-
-      users.push(userData);
-      localStorage.setItem("users", JSON.stringify(users));
-      resolve(userData);
-    } catch (error) {
-      reject(new Error("Erro ao registrar usuário."));
+    const userExists = users.find((u) => u.email === data.email);
+    if (userExists) {
+      return reject(new Error("E-mail já cadastrado."));
     }
+
+    const newUser = {
+      ...data,
+      id: Date.now(),
+    };
+
+    users.push(newUser);
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    resolve(newUser);
   });
 }
 
-// LOGIN
-export async function loginUser({ email, password }) {
+export function loginUser(email, password) {
   return new Promise((resolve, reject) => {
-    try {
-      const users = JSON.parse(localStorage.getItem("users")) || [];
+    const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+    const user = users.find(
+      (u) => u.email === email && u.password === password
+    );
 
-      const user = users.find(
-        (u) => u.email === email && u.password === password
-      );
-
-      if (!user) {
-        return reject(new Error("Email ou senha inválidos."));
-      }
-
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      localStorage.setItem("userEmail", email);
-      resolve(user);
-    } catch (error) {
-      reject(new Error("Erro ao fazer login."));
+    if (!user) {
+      return reject(new Error("E-mail ou senha inválidos."));
     }
+
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+    resolve(user);
   });
 }
 
-// LOGOUT
-export function logout() {
-  localStorage.removeItem("currentUser");
-  localStorage.removeItem("userEmail");
+export function logoutUser() {
+  localStorage.removeItem(CURRENT_USER_KEY);
 }
 
-// VERIFICA SE ESTÁ LOGADO
-export function isLoggedIn() {
-  return !!localStorage.getItem("currentUser");
-}
-
-// PEGA USUÁRIO ATUAL
 export function getCurrentUser() {
-  try {
-    const userStr = localStorage.getItem("currentUser");
-    return userStr ? JSON.parse(userStr) : null;
-  } catch (err) {
-    console.error("Erro ao fazer parse do currentUser:", err);
-    return null;
-  }
+  return JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
 }

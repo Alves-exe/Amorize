@@ -1,95 +1,82 @@
-import { GoHeartFill } from "react-icons/go";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authServiceLocal";
-import Input from "../components/Inputs";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    const newErrors = {};
-    if (!email.trim()) newErrors.email = "Insira seu e-mail";
-    if (!password.trim()) newErrors.password = "Insira sua senha";
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
     try {
-      const user = await loginUser({ email, password });
-      console.log("Usuário logado:", user);
+      await loginUser(formData.email, formData.password);
       navigate("/amorize");
     } catch (err) {
-      setErrors({ email: err.message });
+      setError(err.message);
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen justify-center items-center bg-gradient-to-br from-rose-50 to-slate-50 p-4">
-      <div className="rounded-lg bg-white shadow-md p-6 w-full max-w-md">
+    <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-rose-50 to-slate-50">
+      <div className="bg-white rounded-xl shadow-md p-6 w-full max-w-md">
         <div className="flex flex-col items-center space-y-3 text-center">
-          <GoHeartFill size={35} className="text-rose-500" />
-          <h1 className="font-semibold text-2xl">Bem-vindo à Amorize</h1>
-          <p className="text-gray-500">Entre com sua conta para continuar</p>
+          <h1 className="text-2xl font-semibold">
+            <span className="block">❤</span>
+            Bem-vindo à Amorize
+          </h1>
+          <p className="text-gray-400 mb-6">
+            Entre com sua conta para continuar
+          </p>
         </div>
-        <form onSubmit={handleLogin} className="mt-4 space-y-4">
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium">E-mail</label>
-            <Input
+            <label className="block">E-mail</label>
+            <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border border-rose-200 rounded"
             />
-            {errors.email && (
-              <p className="text-rose-500 text-sm">{errors.email}</p>
-            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Senha</label>
-            <Input
+            <label className="block">Senha</label>
+            <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border rounded"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full p-2 border border-rose-200 rounded"
             />
-            {errors.password && (
-              <p className="text-rose-500 text-sm">{errors.password}</p>
-            )}
-            <div className="text-right text-sm">
-              <button
-                type="button"
-                onClick={() => navigate("/forgot")}
-                className="text-rose-500"
-              >
-                Esqueceu a senha?
-              </button>
-            </div>
           </div>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <button
             type="submit"
-            className="w-full bg-rose-500 text-white py-2 rounded"
+            className="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold py-2 px-4 rounded"
           >
             Entrar
           </button>
         </form>
-
-        <p className="text-center text-sm text-gray-600 mt-4">
-          Não tem uma conta?{" "}
-          <span
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Ainda não tem uma conta?{" "}
+          <button
+            className="text-rose-500 hover:underline"
             onClick={() => navigate("/register")}
-            className="text-rose-500 cursor-pointer"
           >
-            Registre-se
-          </span>
+            Cadastre-se
+          </button>
         </p>
       </div>
     </div>

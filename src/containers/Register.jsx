@@ -4,11 +4,9 @@ import { registerUser } from "../services/authServiceLocal";
 
 function Register() {
   const [formData, setFormData] = useState({
-    tipo: "",
     noivo: "",
     noiva: "",
     dataCasamento: "",
-    name: "",
     email: "",
     password: "",
   });
@@ -23,17 +21,9 @@ function Register() {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.tipo) newErrors.tipo = "Selecione o tipo de usuário";
-
-    if (formData.tipo === "noivos") {
-      if (!formData.noivo) newErrors.noivo = "Nome do noivo é obrigatório";
-      if (!formData.noiva) newErrors.noiva = "Nome da noiva é obrigatório";
-      if (!formData.dataCasamento)
-        newErrors.dataCasamento = "Data é obrigatória";
-    } else {
-      if (!formData.name) newErrors.name = "Nome é obrigatório";
-    }
-
+    if (!formData.noivo) newErrors.noivo = "Nome do noivo é obrigatório";
+    if (!formData.noiva) newErrors.noiva = "Nome da noiva é obrigatório";
+    if (!formData.dataCasamento) newErrors.dataCasamento = "Data é obrigatória";
     if (!formData.email) newErrors.email = "E-mail é obrigatório";
     if (!formData.password) newErrors.password = "Senha é obrigatória";
 
@@ -48,25 +38,14 @@ function Register() {
       return;
     }
 
-    const tipoMap = {
-      noivos: formData.noiva ? "NOIVA" : "NOIVO",
-      organizador: "FORNECEDOR",
-    };
-
     const payload = {
-      name:
-        formData.tipo === "noivos"
-          ? `${formData.noivo} & ${formData.noiva}`
-          : formData.name || "",
+      name: `${formData.noivo} & ${formData.noiva}`,
       email: formData.email,
       password: formData.password,
-      userType: tipoMap[formData.tipo],
-      weddingDate:
-        formData.tipo === "noivos" && formData.dataCasamento
-          ? formData.dataCasamento
-          : null,
-      partner1: formData.tipo === "noivos" ? formData.noivo : "",
-      partner2: formData.tipo === "noivos" ? formData.noiva : "",
+      userType: "NOIVA", // ou NOIVO – aqui é fixo como exemplo
+      weddingDate: formData.dataCasamento,
+      partner1: formData.noivo,
+      partner2: formData.noiva,
     };
 
     try {
@@ -88,83 +67,46 @@ function Register() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block font-medium">Tipo de Usuário</label>
-            <select
-              name="tipo"
-              value={formData.tipo}
+            <label className="block">Nome do Noivo</label>
+            <input
+              type="text"
+              name="noivo"
+              value={formData.noivo}
               onChange={handleChange}
-              className="w-full border rounded p-2"
-            >
-              <option value="">Selecione</option>
-              <option value="noivos">Noivos</option>
-              <option value="organizador">Organizador</option>
-            </select>
-            {errors.tipo && (
-              <p className="text-red-500 text-sm">{errors.tipo}</p>
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            {errors.noivo && (
+              <p className="text-red-500 text-sm">{errors.noivo}</p>
             )}
           </div>
 
-          {formData.tipo === "noivos" && (
-            <>
-              <div>
-                <label className="block">Nome do Noivo</label>
-                <input
-                  type="text"
-                  name="noivo"
-                  value={formData.noivo}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-                {errors.noivo && (
-                  <p className="text-red-500 text-sm">{errors.noivo}</p>
-                )}
-              </div>
+          <div>
+            <label className="block">Nome da Noiva</label>
+            <input
+              type="text"
+              name="noiva"
+              value={formData.noiva}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            {errors.noiva && (
+              <p className="text-red-500 text-sm">{errors.noiva}</p>
+            )}
+          </div>
 
-              <div>
-                <label className="block">Nome da Noiva</label>
-                <input
-                  type="text"
-                  name="noiva"
-                  value={formData.noiva}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-                {errors.noiva && (
-                  <p className="text-red-500 text-sm">{errors.noiva}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block">Data do Casamento</label>
-                <input
-                  type="date"
-                  name="dataCasamento"
-                  value={formData.dataCasamento}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-                {errors.dataCasamento && (
-                  <p className="text-red-500 text-sm">{errors.dataCasamento}</p>
-                )}
-              </div>
-            </>
-          )}
-
-          {formData.tipo !== "noivos" && (
-            <div>
-              <label className="block">Nome Completo</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm">{errors.name}</p>
-              )}
-            </div>
-          )}
+          <div>
+            <label className="block">Data do Casamento</label>
+            <input
+              type="date"
+              name="dataCasamento"
+              value={formData.dataCasamento}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            {errors.dataCasamento && (
+              <p className="text-red-500 text-sm">{errors.dataCasamento}</p>
+            )}
+          </div>
 
           <div>
             <label className="block">E-mail</label>

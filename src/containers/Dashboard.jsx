@@ -12,6 +12,7 @@ import BudgetSummary from "../components/BudgetSummary";
 import { ChartPie, ListChecks } from "lucide-react";
 import ConvidadosPage from "../components/ConvidadosPage";
 import Invites from "./Invites";
+
 function Dashboard() {
   const [user, setUser] = useState(null);
   const [content, setContent] = useState(null);
