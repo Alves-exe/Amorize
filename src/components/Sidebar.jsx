@@ -53,7 +53,7 @@ function Sidebar({ setContent, handleDashboardClick }) {
         setContent({
           title: "Agenda",
           description: "Veja seus eventos programados.",
-          calendar: true, // Adicionando um identificador para a agenda
+          calendar: true,
         }),
     },
     {

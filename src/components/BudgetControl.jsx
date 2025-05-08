@@ -68,49 +68,50 @@ export default function BudgetControl({ onBudgetChange, userId }) {
   };
 
   return (
-    <div className="p-4">
-      {/* Definindo Orçamento Total */}
-      <div className="mb-4">
-        <input
-          type="number"
-          value={orcamentoTotal}
-          onChange={handleBudgetChange}
-          placeholder="Defina o Orçamento Total"
-          className="border p-2 rounded"
-        />
+    <div className="p-4 flex flex-col md:flex-row">
+      <div className="md:w-1/2 pr-4">
+        <div className="mb-4">
+          <input
+            type="number"
+            value={orcamentoTotal}
+            onChange={handleBudgetChange}
+            placeholder="Defina o Orçamento Total"
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        {/* Adicionar Despesas */}
+        <div className="mb-4">
+          <input
+            type="text"
+            value={expenseName}
+            onChange={(e) => setExpenseName(e.target.value)}
+            placeholder="Nome da Despesa"
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        <div className="mb-4">
+          <input
+            type="number"
+            value={expenseAmount}
+            onChange={(e) => setExpenseAmount(e.target.value)}
+            placeholder="Valor da Despesa"
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        <button
+          onClick={handleAddExpense}
+          className="mt-2 bg-rose-500 text-white p-2 rounded w-full"
+        >
+          Adicionar Despesa
+        </button>
       </div>
 
-      {/* Adicionar Despesas */}
-      <div className="mb-4">
-        <input
-          type="text"
-          value={expenseName}
-          onChange={(e) => setExpenseName(e.target.value)}
-          placeholder="Nome da Despesa"
-          className="border p-2 rounded "
-        />
-      </div>
-
-      <div className="mb-4">
-        <input
-          type="number"
-          value={expenseAmount}
-          onChange={(e) => setExpenseAmount(e.target.value)}
-          placeholder="Valor da Despesa"
-          className="border p-2 rounded"
-        />
-      </div>
-
-      <button
-        onClick={handleAddExpense}
-        className="mt-2 bg-rose-500 text-white p-2 rounded "
-      >
-        Adicionar Despesa
-      </button>
-
-      {/* Relatório de Despesas */}
-      <div className="mt-6 ">
-        <h3 className="font-bold">Despesas:</h3>
+      {/* Coluna do relatório de despesas */}
+      <div className=" md:w-1/2 pl-4 mt-6 md:mt-0">
+        <h3 className="font-bold ml-2">Despesas:</h3>
         <ul className="mt-2">
           {expenses.length > 0 ? (
             expenses.map((expense) => (
@@ -120,7 +121,7 @@ export default function BudgetControl({ onBudgetChange, userId }) {
               </li>
             ))
           ) : (
-            <p className="text-gray-500">Nenhuma despesa registrada.</p>
+            <li className="text-gray-500">Nenhuma despesa registrada.</li>
           )}
         </ul>
       </div>

@@ -3,6 +3,8 @@ export default function CardProgress({
   progressValue,
   tasks,
   orcamentoTotal,
+  convidadosConfirmados,
+  totalConvidados,
 }) {
   const formatCurrency = (value) => {
     if (value === undefined || value === null || isNaN(value)) {
@@ -17,7 +19,7 @@ export default function CardProgress({
   const progressBarColor = "bg-rose-500";
 
   return (
-    <div className="bg-white drop-shadow-2xl rounded-xl mt-22 ml-50 p-6">
+    <div className="bg-white drop-shadow-2xl rounded-xl mt-22 p-6">
       <h2 className="text-xl font-bold text-black">{title}</h2>
       <p className="text-gray-600 mb-2">{`Você já completou ${progressValue}% das tarefas`}</p>
 
@@ -34,14 +36,20 @@ export default function CardProgress({
       </div>
 
       {/* Detalhes do orçamento */}
-      <div className="text-xl mt-2 inline-flex text-black font-medium">
-        <p className="ml-5">
-          <strong>TASKS</strong>
-          <p className="text-sm ml-2 text-gray-500">Tarefas Incompletas</p>
+      <div className="text-xl mt-2 inline-flex gap-x-32 text-black font-medium">
+        <p className="ml-5 justify-items-center">
+          <strong>
+            {convidadosConfirmados}/{totalConvidados}
+          </strong>
+          <p className="text-sm ml-2 text-gray-500">Convidados Confirmados</p>
         </p>
-        <p className="ml-72">
+        <p className="ml-5 justify-items-center">
           <strong>{formatCurrency(orcamentoTotal)}</strong>
           <p className="text-sm ml-2 text-gray-500">Orçamento Total</p>
+        </p>
+        <p className="ml-5 justify-items-center">
+          <strong>{tasks}</strong>
+          <p className="text-sm ml-2 text-gray-500">Tarefas Pendentes</p>
         </p>
       </div>
     </div>

@@ -1,76 +1,68 @@
-import { useCallback, useEffect, useState } from "react";
-import { fetchConvidados, addConvidado } from "../api/api-convidados";
+import { useEffect, useState } from "react";
 
-function ConvidadosPage() {
+export default function Convidados() {
   const [convidados, setConvidados] = useState([]);
-  const [novoConvidado, setNovoConvidado] = useState("");
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const carregar = useCallback(async () => {
-    if (user?.id) {
-      const lista = await fetchConvidados(user.id);
-      setConvidados(lista || []);
-    }
-  }, [user?.id]);
 
   useEffect(() => {
-    carregar();
-  }, [carregar]);
+    const dados = JSON.parse(localStorage.getItem("convidados")) || [];
+    setConvidados(dados);
+  }, []);
 
-  const handleAddConvidado = async () => {
-    if (!novoConvidado.trim()) return;
+  const atualizarLocalStorage = (lista) => {
+    localStorage.setItem("convidados", JSON.stringify(lista));
+    setConvidados(lista);
+  };
 
-    await addConvidado(user.id, {
-      nome: novoConvidado,
-      confirmado: false,
-    });
+  const toggleConfirmado = (index) => {
+    const atualizados = [...convidados];
+    atualizados[index].confirmado = !atualizados[index].confirmado;
+    atualizarLocalStorage(atualizados);
+  };
 
-    setNovoConvidado("");
-    carregar();
+  const removerConvidado = (index) => {
+    const atualizados = convidados.filter((_, i) => i !== index);
+    atualizarLocalStorage(atualizados);
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-rose-500 mb-4">
-        Lista de Convidados
-      </h2>
+    <div className="p-6 max-w-3xl mx-auto bg-white rounded shadow">
+      <h2 className="text-2xl font-bold mb-4">Lista de Convidados</h2>
 
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          value={novoConvidado}
-          onChange={(e) => setNovoConvidado(e.target.value)}
-          placeholder="Nome do convidado"
-          className="border rounded p-2 flex-1"
-        />
-        <button
-          onClick={handleAddConvidado}
-          className="bg-rose-500 text-white px-4 py-2 rounded hover:bg-rose-600"
-        >
-          Adicionar
-        </button>
-      </div>
-
-      <ul className="space-y-2">
-        {convidados.length === 0 && (
-          <li className="text-gray-500">Nenhum convidado adicionado ainda.</li>
-        )}
-        {convidados.map((convidado, index) => (
-          <li
-            key={index}
-            className={`p-3 rounded shadow-md flex justify-between items-center ${
-              convidado.confirmado ? "bg-green-100" : "bg-yellow-100"
-            }`}
-          >
-            <span className="font-medium">{convidado.nome}</span>
-            <span className="text-sm text-gray-600">
-              {convidado.confirmado ? "Confirmado" : "Pendente"}
-            </span>
-          </li>
-        ))}
-      </ul>
+      {convidados.length === 0 ? (
+        <p className="text-gray-500">Nenhum convidado adicionado.</p>
+      ) : (
+        <ul className="space-y-4">
+          {convidados.map((c, i) => (
+            <li
+              key={i}
+              className="border p-4 rounded flex justify-between items-center"
+            >
+              <div>
+                <p className="font-semibold">{c.nome}</p>
+                <p className="text-sm text-gray-600">{c.telefone}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => toggleConfirmado(i)}
+                  className={`text-sm px-3 py-1 rounded font-medium ${
+                    c.confirmado
+                      ? "bg-green-100 text-green-700"
+                      : "bg-yellow-100 text-yellow-700"
+                  }`}
+                >
+                  {c.confirmado ? "Confirmado" : "Pendente"}
+                </button>
+                <button
+                  onClick={() => removerConvidado(i)}
+                  className="text-red-600 hover:underline text-sm"
+                >
+                  Remover
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
-
-export default ConvidadosPage;

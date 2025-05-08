@@ -10,6 +10,8 @@ import { calcularProgresso } from "../utils/progressoHelper";
 import TasksCardLocal from "../components/TasksCardLocal";
 import BudgetSummary from "../components/BudgetSummary";
 import { ChartPie } from "lucide-react";
+import ConvidadosPage from "../components/ConvidadosPage";
+import Invites from "./Invites";
 function Dashboard() {
   const [user, setUser] = useState(null);
   const [content, setContent] = useState(null);
@@ -18,6 +20,8 @@ function Dashboard() {
   const [tarefasConcluidas, setTarefasConcluidas] = useState(0);
   const [totalTarefas, setTotalTarefas] = useState(0);
   const [orcamentoInfo, setOrcamentoInfo] = useState({ usado: 0, total: 0 });
+
+  const tarefasPendentes = totalTarefas - tarefasConcluidas;
 
   useEffect(() => {
     try {
@@ -109,14 +113,22 @@ function Dashboard() {
 
         {showProgress && (
           <>
-            <CardProgress
-              title="Progresso do Planejamento"
-              subtitle={`Você já completou ${progressValue}% das tarefas`}
-              progressValue={progressValue}
-              orcamentoTotal={orcamentoInfo.total}
-            />
-
-            <div className="flex justify-center items-start gap-5 mt-10 flex-wrap">
+            <div className="flex justify-center mt-6">
+              <div className="w-full max-w-5xl">
+                <CardProgress
+                  title="Progresso do Planejamento"
+                  subtitle={`Você já completou ${progressValue}% das tarefas`}
+                  progressValue={progressValue}
+                  orcamentoTotal={orcamentoInfo.total}
+                  tasks={tarefasPendentes}
+                  convidadosConfirmados={
+                    convidados.filter((c) => c.confirmado).length
+                  }
+                  totalConvidados={convidados.length}
+                />
+              </div>
+            </div>
+            <div className="flex justify-center gap-5 mt-10 flex-wrap">
               <Card
                 title="Tarefas Pendentes"
                 content={
@@ -160,6 +172,8 @@ function Dashboard() {
               </div>
             )}
             {content?.calendar && <Calendar weddingDate={user?.weddingDate} />}
+            {content.title === "Convidados" && <ConvidadosPage />}
+            {content.title === "Convites" && <Invites />}
           </div>
         )}
       </div>
