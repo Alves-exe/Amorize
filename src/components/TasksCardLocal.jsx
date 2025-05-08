@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaCheckCircle, FaTrash } from "react-icons/fa";
+import { Dot, ListChecks } from "lucide-react";
 
 function TasksCardLocal({ onProgressUpdate }) {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -65,9 +66,10 @@ function TasksCardLocal({ onProgressUpdate }) {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 w-full max-w-sm">
+    <div className="bg-white shadow-md rounded-lg  w-full max-w-sm">
       <h3 className="text-lg font-semibold mb-4 text-gray-700">
-        Minhas Tarefas
+        Minhas Tarefas{" "}
+        <ListChecks size={30} className="inline-flex ml-20 text-rose-400" />
       </h3>
 
       <div className="flex gap-2 mb-4">
@@ -90,8 +92,9 @@ function TasksCardLocal({ onProgressUpdate }) {
         {tasks.map((task) => (
           <li
             key={task.id}
-            className="flex justify-between items-center border p-2 rounded"
+            className="flex justify-between items-center border border-rose-200 p-2 rounded"
           >
+            <Dot size={30} className="text-rose-500" />
             <span
               onClick={() => handleToggleComplete(task.id)}
               className={`cursor-pointer flex-1 ${

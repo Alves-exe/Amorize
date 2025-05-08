@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { Users } from "lucide-react";
 export default function Invites() {
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -50,7 +50,10 @@ export default function Invites() {
 
       <p className="text-gray-600 mt-6">
         Os convites enviados aparecem automaticamente na lista de convidados em
-        "Convidados".
+        <br />
+        <strong>
+          "<Users size={20} className="inline-flex" /> Convidados"
+        </strong>
       </p>
     </div>
   );

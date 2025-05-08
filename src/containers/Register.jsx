@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { registerUser } from "../services/authServiceLocal";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -49,7 +49,7 @@ function Register() {
     }
 
     const tipoMap = {
-      noivos: formData.noiva ? "NOIVA" : "NOIVO", // alterna dinamicamente
+      noivos: formData.noiva ? "NOIVA" : "NOIVO",
       organizador: "FORNECEDOR",
     };
 
@@ -58,35 +58,24 @@ function Register() {
         formData.tipo === "noivos"
           ? `${formData.noivo} & ${formData.noiva}`
           : formData.name || "",
-
       email: formData.email,
       password: formData.password,
-
       userType: tipoMap[formData.tipo],
-
       weddingDate:
         formData.tipo === "noivos" && formData.dataCasamento
           ? formData.dataCasamento
           : null,
-
       partner1: formData.tipo === "noivos" ? formData.noivo : "",
       partner2: formData.tipo === "noivos" ? formData.noiva : "",
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/register",
-        payload
-      );
-      console.log("Usuário registrado com sucesso:", response.data);
-      navigate("/login"); // redirecionar após cadastro
+      await registerUser(payload);
+      console.log("Usuário registrado com sucesso");
+      navigate("/login");
     } catch (error) {
       console.error("Erro ao registrar:", error);
-      if (error.response?.data) {
-        alert("Erro: " + JSON.stringify(error.response.data));
-      } else {
-        alert("Erro ao registrar. Verifique sua conexão e os dados.");
-      }
+      alert(error.message || "Erro ao registrar. Tente novamente.");
     }
   };
 

@@ -9,7 +9,7 @@ import { fetchConvidados } from "../api/api-convidados";
 import { calcularProgresso } from "../utils/progressoHelper";
 import TasksCardLocal from "../components/TasksCardLocal";
 import BudgetSummary from "../components/BudgetSummary";
-import { ChartPie } from "lucide-react";
+import { ChartPie, ListChecks } from "lucide-react";
 import ConvidadosPage from "../components/ConvidadosPage";
 import Invites from "./Invites";
 function Dashboard() {
@@ -130,14 +130,13 @@ function Dashboard() {
             </div>
             <div className="flex justify-center gap-5 mt-10 flex-wrap">
               <Card
-                title="Tarefas Pendentes"
+                title="Tarefas"
                 content={
                   <TasksCardLocal onProgressUpdate={handleTaskProgress} />
                 }
               />
               <Card
                 title="Orçamento"
-                icon={<ChartPie size={30} className="inline-flex ml-52" />}
                 content={
                   <BudgetSummary
                     total={orcamentoInfo.total}
@@ -157,7 +156,7 @@ function Dashboard() {
         )}
 
         {!showProgress && content && (
-          <div className="mt-6 ml-28">
+          <div className="max-w-3xl mx-auto ">
             <h2 className="text-2xl font-bold text-rose-600">
               {content.title}
             </h2>

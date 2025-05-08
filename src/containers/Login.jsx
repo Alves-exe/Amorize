@@ -1,7 +1,7 @@
 import { GoHeartFill } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { loginUser } from "../services/authService";
+import { loginUser } from "../services/authServiceLocal";
 import Input from "../components/Inputs";
 
 function Login() {
