@@ -9,9 +9,10 @@ import { fetchConvidados } from "../api/api-convidados";
 import { calcularProgresso } from "../utils/progressoHelper";
 import TasksCardLocal from "../components/TasksCardLocal";
 import BudgetSummary from "../components/BudgetSummary";
-import { ChartPie, ListChecks } from "lucide-react";
+
 import ConvidadosPage from "../components/ConvidadosPage";
 import Invites from "./Invites";
+import Profile from "../components/Profile";
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -174,6 +175,7 @@ function Dashboard() {
             {content?.calendar && <Calendar weddingDate={user?.weddingDate} />}
             {content.title === "Convidados" && <ConvidadosPage />}
             {content.title === "Convites" && <Invites />}
+            {content.title === "Perfil" && <Profile />}
           </div>
         )}
       </div>

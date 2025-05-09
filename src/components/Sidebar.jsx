@@ -65,12 +65,18 @@ function Sidebar({ setContent, handleDashboardClick }) {
           description: "Envie e acompanhe os convites.",
         }),
     },
+    {
+      icon: <User />,
+      label: "Perfil",
+      onclick: () =>
+        setContent({
+          title: "Perfil",
+          description: "Gerencie seu perfil.",
+        }),
+    },
   ];
 
-  const extraIcons = [
-    { icon: <Bell />, label: "Notificações" },
-    { icon: <User />, label: "Perfil" },
-  ];
+  const extraIcons = [{ icon: <Bell />, label: "Notificações" }];
 
   return (
     <div className="p-4 inline-flex shadow-lg w-screen">
