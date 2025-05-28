@@ -27,7 +27,7 @@ function Dashboard() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("currentUser");
+      const stored = localStorage.getItem("amorize_current_user");
       const parsedUser = stored ? JSON.parse(stored) : null;
       setUser(parsedUser);
     } catch (err) {
@@ -69,6 +69,7 @@ function Dashboard() {
   const handleDashboardClick = () => {
     setShowProgress(true);
     setContent(null);
+    carregarOrcamento();
   };
 
   const resetAndSetContent = (newContent) => {

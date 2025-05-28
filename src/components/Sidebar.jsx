@@ -4,7 +4,7 @@ import {
   Users,
   Calendar,
   Mail,
-  Bell,
+  
   User,
   DollarSign,
 } from "lucide-react";
@@ -14,7 +14,7 @@ function Sidebar({ setContent, handleDashboardClick }) {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("currentUser");
+      const stored = localStorage.getItem("amorize_current_user");
       if (stored && stored !== "undefined") {
         const parsedUser = JSON.parse(stored);
         setUser(parsedUser);
@@ -68,7 +68,7 @@ function Sidebar({ setContent, handleDashboardClick }) {
     {
       icon: <User />,
       label: "Perfil",
-      onclick: () =>
+      onClick: () =>
         setContent({
           title: "Perfil",
           description: "Gerencie seu perfil.",
@@ -76,7 +76,7 @@ function Sidebar({ setContent, handleDashboardClick }) {
     },
   ];
 
-  const extraIcons = [{ icon: <Bell />, label: "Notificações" }];
+  
 
   return (
     <div className="p-4 inline-flex shadow-lg w-screen">
@@ -93,19 +93,10 @@ function Sidebar({ setContent, handleDashboardClick }) {
             {label}
           </button>
         ))}
-        <div className="ml-52 inline-flex">
-          {extraIcons.map(({ icon, label }, i) => (
-            <button
-              key={i}
-              className="flex items-center gap-2 text-left ml-6 hover:text-rose-500 font-medium"
-              title={label}
-            >
-              {icon}
-            </button>
-          ))}
+  
         </div>
       </div>
-    </div>
+   
   );
 }
 

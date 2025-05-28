@@ -1,70 +1,89 @@
 import { useEffect, useState } from "react";
 
 export default function BudgetControl({ onBudgetChange, userId }) {
-  const [orcamentoTotal, setOrcamentoTotal] = useState(0);
+  const [orcamentoTotal, setOrcamentoTotal] = useState("");
   const [expenses, setExpenses] = useState([]);
   const [expenseName, setExpenseName] = useState("");
   const [expenseAmount, setExpenseAmount] = useState("");
 
-  // Carregar dados do localStorage
   useEffect(() => {
     if (userId) {
-      const stored = localStorage.getItem(`budget_${userId}`);
-      const parsed = stored ? JSON.parse(stored) : [];
-      setExpenses(parsed);
-
+      const storedExpenses = localStorage.getItem(`budget_${userId}`);
       const storedBudget = localStorage.getItem(`total_budget_${userId}`);
+
+      if (storedExpenses) {
+        try {
+          setExpenses(JSON.parse(storedExpenses));
+        } catch {
+          setExpenses([]);
+        }
+      }
+
       if (storedBudget) {
-        setOrcamentoTotal(parseFloat(storedBudget));
+        const parsedBudget = parseFloat(storedBudget);
+        setOrcamentoTotal(!isNaN(parsedBudget) ? String(parsedBudget) : "");
+      } else {
+        setOrcamentoTotal("");
       }
     }
   }, [userId]);
 
-  // Atualizar orçamento quando há mudanças
+  useEffect(() => {
+    if (userId) {
+      localStorage.setItem(`budget_${userId}`, JSON.stringify(expenses));
+    }
+  }, [expenses, userId]);
+
+  useEffect(() => {
+    if (userId) {
+      localStorage.setItem(`total_budget_${userId}`, orcamentoTotal);
+    }
+  }, [orcamentoTotal, userId]);
+
   useEffect(() => {
     if (onBudgetChange) {
-      onBudgetChange({ usado: calculateUsedBudget(), total: orcamentoTotal });
+      const totalNum = parseFloat(orcamentoTotal);
+      onBudgetChange({ usado: calculateUsedBudget(), total: !isNaN(totalNum) ? totalNum : 0 });
     }
   }, [orcamentoTotal, expenses, onBudgetChange]);
 
-  // Calcular o orçamento utilizado
   const calculateUsedBudget = () => {
     return expenses.reduce((sum, expense) => sum + expense.amount, 0);
   };
 
-  // Adicionar uma nova despesa
   const handleAddExpense = () => {
     if (!expenseName.trim() || !expenseAmount || isNaN(expenseAmount)) {
-      alert("Por favor, insira uma despesa válida.");
-      return;
-    }
+    alert("Por favor, insira uma despesa válida.");
+    return;
+  }
 
-    const newExpense = {
-      id: Date.now(),
-      name: expenseName,
-      amount: parseFloat(expenseAmount),
-    };
-    const updatedExpenses = [...expenses, newExpense];
-    setExpenses(updatedExpenses);
-    localStorage.setItem(`budget_${userId}`, JSON.stringify(updatedExpenses));
+  const valorDespesa = parseFloat(expenseAmount);
 
-    if (onBudgetChange) {
-      onBudgetChange({ usado: calculateUsedBudget(), total: orcamentoTotal });
-    }
+  if (valorDespesa < 0) {
+    alert("O valor da despesa não pode ser negativo.");
+    return;
+  }
 
-    setExpenseName("");
-    setExpenseAmount("");
+  const totalUsado = calculateUsedBudget();
+
+  if (valorDespesa + totalUsado > parseFloat(orcamentoTotal || 0)) {
+    alert("Esta despesa ultrapassa o orçamento total disponível.");
+    return;
+  }
+
+  const newExpense = {
+    id: Date.now(),
+    name: expenseName,
+    amount: valorDespesa,
+  };
+  setExpenses((prev) => [...prev, newExpense]);
+  setExpenseName("");
+  setExpenseAmount("");
   };
 
-  // Alterar o valor do orçamento total
   const handleBudgetChange = (event) => {
-    const newBudget = parseFloat(event.target.value);
-    setOrcamentoTotal(newBudget);
-    localStorage.setItem(`total_budget_${userId}`, newBudget);
-
-    if (onBudgetChange) {
-      onBudgetChange({ usado: calculateUsedBudget(), total: newBudget });
-    }
+    const newValue = event.target.value;
+    setOrcamentoTotal(newValue);
   };
 
   return (
@@ -80,7 +99,6 @@ export default function BudgetControl({ onBudgetChange, userId }) {
           />
         </div>
 
-        {/* Adicionar Despesas */}
         <div className="mb-4">
           <input
             type="text"
@@ -109,8 +127,7 @@ export default function BudgetControl({ onBudgetChange, userId }) {
         </button>
       </div>
 
-      {/* Coluna do relatório de despesas */}
-      <div className=" md:w-1/2 pl-4 mt-6 md:mt-0">
+      <div className="md:w-1/2 pl-4 mt-6 md:mt-0">
         <h3 className="font-bold ml-2">Despesas:</h3>
         <ul className="mt-2">
           {expenses.length > 0 ? (

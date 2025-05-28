@@ -3,7 +3,7 @@ import { FaCheckCircle, FaTrash } from "react-icons/fa";
 import { Dot, ListChecks } from "lucide-react";
 
 function TasksCardLocal({ onProgressUpdate }) {
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const currentUser = JSON.parse(localStorage.getItem("amorize_current_user"));
   const userId = currentUser?.id;
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
