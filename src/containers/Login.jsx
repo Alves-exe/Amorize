@@ -50,14 +50,14 @@ function Login() {
           </div>
 
           <div>
-            <label className="block">Senha</label>
+            <label className="block">Senha <button onClick={()=>navigate("/forgot")}> <span className="text-rose-500 text-sm ml-56">Esqueceu a senha?</span></button></label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               className="w-full p-2 border border-rose-200 rounded"
-            />
+            /> 
           </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
