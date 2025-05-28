@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 
+const formatarTelefone = (telefone) => {
+  const numeros = telefone.replace(/\D/g, "").slice(0, 11);
+  if (numeros.length === 11) {
+    return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+  }
+  return telefone;
+};
+
 export default function Convidados() {
   const [convidados, setConvidados] = useState([]);
 
@@ -26,7 +34,7 @@ export default function Convidados() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-4">Lista de Convidados</h2>
+      <h2 className="text-2xl font-bold mb-4 text-rose-500">Lista de Convidados</h2>
 
       {convidados.length === 0 ? (
         <p className="text-gray-500">Nenhum convidado adicionado.</p>
@@ -39,7 +47,7 @@ export default function Convidados() {
             >
               <div>
                 <p className="font-semibold">{c.nome}</p>
-                <p className="text-sm text-gray-600">{c.telefone}</p>
+                <p className="text-sm text-gray-600">{formatarTelefone(c.telefone)}</p>
               </div>
               <div className="flex items-center gap-3">
                 <button
