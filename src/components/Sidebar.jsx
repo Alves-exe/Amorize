@@ -6,15 +6,7 @@ function Sidebar({ setContent, handleDashboardClick }) {
 
   const menuItems = [
     { icon: <Home />, label: "Dashboard", onClick: handleDashboardClick },
-    {
-      icon: <Users />,
-      label: "Convidados",
-      onClick: () =>
-        setContent({
-          title: "Convidados",
-          description: "Gerencie sua lista de convidados.",
-        }),
-    },
+
     {
       icon: <DollarSign />,
       label: "Orçamento",

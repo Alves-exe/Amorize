@@ -244,7 +244,6 @@ function Dashboard() {
               <Calendar tasks={tasks} onAddTask={handleAddTask} />
             )}
 
-            {content.title === "Convidados" && <ConvidadosPage />}
             {content.title === "Convites" && <Invites />}
             {content.title === "Perfil" && <Profile />}
           </div>
