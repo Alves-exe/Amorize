@@ -1,95 +1,39 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function BudgetControl({ onBudgetChange, userId }) {
-  const [orcamentoTotal, setOrcamentoTotal] = useState("");
-  const [expenses, setExpenses] = useState([]);
+export default function BudgetControl({
+  onBudgetTotalChange,
+  expenses,
+  setExpenses,
+  orcamentoTotal,
+  userId,
+}) {
   const [expenseName, setExpenseName] = useState("");
   const [expenseAmount, setExpenseAmount] = useState("");
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    if (userId) {
-      const storedExpenses = localStorage.getItem(`budget_${userId}`);
-      const storedBudget = localStorage.getItem(`total_budget_${userId}`);
-
-      if (storedExpenses) {
-        try {
-          setExpenses(JSON.parse(storedExpenses));
-        } catch {
-          setExpenses([]);
-        }
-      }
-
-      if (storedBudget) {
-        const parsedBudget = parseFloat(storedBudget);
-        setOrcamentoTotal(!isNaN(parsedBudget) ? String(parsedBudget) : "");
-      } else {
-        setOrcamentoTotal("");
-      }
-    }
-  }, [userId]);
-
-  useEffect(() => {
-    if (userId) {
-      localStorage.setItem(`budget_${userId}`, JSON.stringify(expenses));
-    }
-  }, [expenses, userId]);
-
-  useEffect(() => {
-    if (userId) {
-      localStorage.setItem(`total_budget_${userId}`, orcamentoTotal);
-    }
-  }, [orcamentoTotal, userId]);
-
-  useEffect(() => {
-    if (onBudgetChange) {
-      const totalNum = parseFloat(orcamentoTotal);
-      onBudgetChange({
-        usado: calculateUsedBudget(),
-        total: !isNaN(totalNum) ? totalNum : 0,
-      });
-    }
-  }, [orcamentoTotal, expenses, onBudgetChange]);
-
-  const calculateUsedBudget = () => {
-    return expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const formatCurrency = (value) => {
+    return value.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
   };
 
-  const closeModal = () => {
-    setShowErrorModal(false);
-    setErrorMessage("");
-  };
+  const totalUsed = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const saldoRestante = orcamentoTotal - totalUsed;
 
   const handleAddExpense = () => {
-    const amountNum = parseFloat(expenseAmount);
-
-    if (!expenseName.trim()) {
-      setErrorMessage("Por favor, insira um nome para a despesa.");
-      setShowErrorModal(true);
+    if (!expenseName || !expenseAmount) {
+      alert("Preencha nome e valor da despesa");
       return;
     }
 
-    if (!expenseAmount || isNaN(amountNum)) {
-      setErrorMessage("Por favor, insira um valor válido para a despesa.");
-      setShowErrorModal(true);
+    const amountNum = parseFloat(expenseAmount.replace(",", "."));
+    if (isNaN(amountNum) || amountNum <= 0) {
+      alert("Valor inválido");
       return;
     }
 
-    if (amountNum < 0) {
-      setErrorMessage("Despesa não pode ser negativa.");
-      setShowErrorModal(true);
-      return;
-    }
-
-    const totalBudgetNum = parseFloat(orcamentoTotal) || 0;
-    const usedBudget = calculateUsedBudget();
-
-    if (amountNum + usedBudget > totalBudgetNum) {
-      setErrorMessage(
-        "A despesa ultrapassa o orçamento total disponível."
-      );
-      setShowErrorModal(true);
+    if (amountNum > saldoRestante) {
+      alert("Despesa maior que o saldo restante do orçamento");
       return;
     }
 
@@ -99,107 +43,93 @@ export default function BudgetControl({ onBudgetChange, userId }) {
       amount: amountNum,
     };
 
-    setExpenses((prev) => [...prev, newExpense]);
+    setExpenses([...expenses, newExpense]);
     setExpenseName("");
     setExpenseAmount("");
   };
 
-  const handleBudgetChange = (event) => {
-    const newValue = event.target.value;
-    setOrcamentoTotal(newValue);
+  const handleRemoveExpense = (id) => {
+    const filtered = expenses.filter((expense) => expense.id !== id);
+    setExpenses(filtered);
   };
 
+  const handleBudgetInputChange = (e) => {
+    const value = e.target.value;
+    const parsed = parseFloat(value);
+    if (!isNaN(parsed) && parsed >= 0) {
+      onBudgetTotalChange(parsed);
+    } else if (value === "") {
+      onBudgetTotalChange(0);
+    }
+  };
+
+  useEffect(() => {
+    onBudgetTotalChange(orcamentoTotal);
+  }, [expenses, orcamentoTotal, onBudgetTotalChange]);
+
   return (
-    <>
-      <div className="p-4 flex flex-col md:flex-row">
-        <div className="md:w-1/2 pr-4">
-          <div className="mb-4">
-            <input
-              type="number"
-              value={orcamentoTotal}
-              onChange={handleBudgetChange}
-              placeholder="Defina o Orçamento Total"
-              className="border p-2 rounded w-full"
-            />
-          </div>
+    <div>
+      <input
+        type="number"
+        placeholder="Qual o orçamento"
+        value={orcamentoTotal}
+        onChange={handleBudgetInputChange}
+        className="border border-gray-300 rounded p-2 mb-4 w-full"
+        min="0"
+        step="0.01"
+      />
 
-          <div className="mb-4">
-            <input
-              type="text"
-              value={expenseName}
-              onChange={(e) => setExpenseName(e.target.value)}
-              placeholder="Nome da Despesa"
-              className="border p-2 rounded w-full"
-            />
-          </div>
+      <h3 className="font-bold mb-2">Despesas:</h3>
+      <ul className="mb-4 max-h-48 overflow-auto border border-gray-200 rounded p-2">
+        {expenses.length === 0 && <li>Nenhuma despesa adicionada.</li>}
+        {expenses.map(({ id, name, amount }) => (
+          <li key={id} className="flex justify-between items-center mb-1">
+            <span>
+              {name} - {formatCurrency(amount)}
+            </span>
+            <button
+              onClick={() => handleRemoveExpense(id)}
+              className="text-red-600 hover:text-red-800"
+              aria-label={`Remover despesa ${name}`}
+            >
+              &times;
+            </button>
+          </li>
+        ))}
+      </ul>
 
-          <div className="mb-4">
-            <input
-              type="number"
-              value={expenseAmount}
-              onChange={(e) => setExpenseAmount(e.target.value)}
-              placeholder="Valor da Despesa"
-              className="border p-2 rounded w-full"
-            />
-          </div>
-
-          <button
-            onClick={handleAddExpense}
-            className="mt-2 bg-rose-500 text-white p-2 rounded w-full hover:bg-rose-600 transition-colors duration-200"
-          >
-            Adicionar Despesa
-          </button>
-        </div>
-
-        <div className="md:w-1/2 pl-4 mt-6 md:mt-0">
-          <h3 className="font-bold ml-2">Despesas:</h3>
-          <ul className="mt-2">
-            {expenses.length > 0 ? (
-              expenses.map((expense) => (
-                <li key={expense.id} className="flex p-2 mt-1">
-                  <span className="font-semibold">{expense.name}</span>
-                  <span className="ml-4">R${expense.amount.toFixed(2)}</span>
-                </li>
-              ))
-            ) : (
-              <li className="text-gray-500">Nenhuma despesa registrada.</li>
-            )}
-          </ul>
-        </div>
+      <div className="flex gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="Nome da despesa"
+          value={expenseName}
+          onChange={(e) => setExpenseName(e.target.value)}
+          className="border border-gray-300 rounded p-2 flex-1"
+        />
+        <input
+          type="number"
+          placeholder="Valor (R$)"
+          value={expenseAmount}
+          onChange={(e) => setExpenseAmount(e.target.value)}
+          className="border border-gray-300 rounded p-2 w-32"
+          min="0"
+          step="0.01"
+        />
+        <button
+          onClick={handleAddExpense}
+          className="bg-rose-500 text-white px-4 rounded"
+        >
+          Adicionar
+        </button>
       </div>
 
-      {/* Modal de erro */}
-      {showErrorModal && (
-  <div className="fixed inset-0 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl border-2 border-rose-300 opacity-95">
-      <h2 className="text-2xl font-extrabold mb-4 text-rose-600 flex items-center gap-2">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-8 w-8 text-rose-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 9v2m0 4h.01M12 5a7 7 0 00-7 7v1a7 7 0 0014 0v-1a7 7 0 00-7-7z"
-          />
-        </svg>
-        Atenção
-      </h2>
-      <p className="mb-6 text-gray-700">{errorMessage}</p>
-      <button
-        onClick={closeModal}
-        className="bg-rose-500 hover:bg-rose-600 text-white font-semibold px-5 py-2 rounded-lg transition-colors duration-200 w-full"
-      >
-        Fechar
-      </button>
+      <p>
+        <strong>Total Usado: </strong> {formatCurrency(totalUsed)}
+      </p>
+      <p>
+        <strong>Saldo Restante: </strong>{" "}
+        {formatCurrency(Math.max(saldoRestante, 0))}
+      </p>
     </div>
-  </div>
-)}
-
-    </>
   );
 }

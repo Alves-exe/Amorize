@@ -1,161 +1,202 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const Calendar = ({ onAddTask }) => {
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+const Calendar = ({
+  onAddTask,
+  tasks = [], // [{ day: number, name: string }]
+  onMonthYearChange,
+  currentYear: propYear,
+  currentMonth: propMonth,
+}) => {
+  const [currentMonth, setCurrentMonth] = useState(
+    propMonth ?? new Date().getMonth()
+  );
+  const [currentYear, setCurrentYear] = useState(
+    propYear ?? new Date().getFullYear()
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
-  const [taskName, setTaskName] = useState("");
+  const [newTaskName, setNewTaskName] = useState("");
 
-  // Função para obter o nome do mês
-  const getCurrentMonth = () => {
-    const months = [
-      "Janeiro",
-      "Fevereiro",
-      "Março",
-      "Abril",
-      "Maio",
-      "Junho",
-      "Julho",
-      "Agosto",
-      "Setembro",
-      "Outubro",
-      "Novembro",
-      "Dezembro",
-    ];
-    return months[currentMonth];
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof propYear === "number") setCurrentYear(propYear);
+  }, [propYear]);
+
+  useEffect(() => {
+    if (typeof propMonth === "number") setCurrentMonth(propMonth);
+  }, [propMonth]);
+
+  useEffect(() => {
+    if (onMonthYearChange) onMonthYearChange(currentYear, currentMonth);
+  }, [currentMonth, currentYear, onMonthYearChange]);
+
+  useEffect(() => {
+    if (isModalOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isModalOpen]);
+
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  const tasksOfSelectedDay = tasks.filter((t) => t.day === selectedDay);
+
+  const openModal = (day) => {
+    setSelectedDay(day);
+    setIsModalOpen(true);
   };
 
-  const getDaysInMonth = (month, year) => {
-    return new Date(year, month + 1, 0).getDate();
+  const closeModal = () => {
+    setSelectedDay(null);
+    setNewTaskName("");
+    setIsModalOpen(false);
   };
 
-  const getFirstDayOfMonth = (month, year) => {
-    return new Date(year, month, 1).getDay();
-  };
+  const handleAddTask = () => {
+    const trimmedName = newTaskName.trim();
+    if (!trimmedName || selectedDay == null) return;
 
-  const generateCalendar = () => {
-    const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
-    const daysInMonth = getDaysInMonth(currentMonth, currentYear);
-
-    const days = [];
-    let day = 1;
-
-    for (let i = 0; i < firstDay; i++) {
-      days.push(null);
+    // Impede duplicar tarefas iguais no mesmo dia
+    const duplicate = tasks.some(
+      (t) =>
+        t.day === selectedDay &&
+        t.name.toLowerCase() === trimmedName.toLowerCase()
+    );
+    if (duplicate) {
+      alert("Essa tarefa já foi adicionada para este dia.");
+      return;
     }
 
-    for (let i = firstDay; i < firstDay + daysInMonth; i++) {
-      days.push(day++);
-    }
-
-    return days;
+    onAddTask({ day: selectedDay, name: trimmedName });
+    setNewTaskName("");
   };
 
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
-      setCurrentYear(currentYear - 1);
+      setCurrentYear((y) => y - 1);
     } else {
-      setCurrentMonth(currentMonth - 1);
+      setCurrentMonth((m) => m - 1);
     }
   };
 
   const handleNextMonth = () => {
     if (currentMonth === 11) {
       setCurrentMonth(0);
-      setCurrentYear(currentYear + 1);
+      setCurrentYear((y) => y + 1);
     } else {
-      setCurrentMonth(currentMonth + 1);
+      setCurrentMonth((m) => m + 1);
     }
   };
 
-  const handleDayClick = (day) => {
-    setSelectedDay(day);
-    setIsModalOpen(true);
-  };
+  const weekDays = ["D", "S", "T", "Q", "Q", "S", "S"];
 
-  const handleTaskSubmit = () => {
-    if (taskName.trim()) {
-      // Passando a tarefa para o componente pai (TasksCardLocal)
-      onAddTask({ day: selectedDay, name: taskName });
-      setTaskName("");
-      setIsModalOpen(false);
-    }
-  };
-
-  const days = generateCalendar();
+  const hasTaskOnDay = (day) => tasks.some((t) => t.day === day);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
+    <div className="calendar-container p-4 bg-white rounded shadow max-w-md mx-auto">
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={handlePrevMonth}
-          className="text-xl text-rose-500 hover:text-rose-600"
+          className="text-rose-600 hover:text-rose-800 font-bold"
+          aria-label="Mês anterior"
         >
           &lt;
         </button>
-        <h2 className="text-xl font-bold text-gray-800">
-          {getCurrentMonth()} {currentYear}
+        <h2 className="text-xl font-semibold text-center flex-grow">
+          {new Date(currentYear, currentMonth).toLocaleString("pt-BR", {
+            month: "long",
+            year: "numeric",
+          })}
         </h2>
         <button
           onClick={handleNextMonth}
-          className="text-xl text-rose-500 hover:text-rose-600"
+          className="text-rose-600 hover:text-rose-800 font-bold"
+          aria-label="Próximo mês"
         >
           &gt;
         </button>
       </div>
 
-      {/*dias da semana*/}
-      <div className="grid grid-cols-7 gap-2 text-center mb-4">
-        <div className="font-semibold text-sm text-rose-400">Dom</div>
-        <div className="font-semibold text-sm text-rose-400">Seg</div>
-        <div className="font-semibold text-sm text-rose-400">Ter</div>
-        <div className="font-semibold text-sm text-rose-400">Qua</div>
-        <div className="font-semibold text-sm text-rose-400">Qui</div>
-        <div className="font-semibold text-sm text-rose-400">Sex</div>
-        <div className="font-semibold text-sm text-rose-400">Sáb</div>
-      </div>
-
-      {/*dias do mes e o bg*/}
-      <div className="grid grid-cols-7 gap-2">
-        {days.map((day, index) => (
-          <div
-            key={index}
-            className={`py-2 ${
-              day
-                ? "text-center cursor-pointer border border-rose-400 rounded-lg hover:bg-rose-100"
-                : "text-transparent"
-            }`}
-            onClick={() => day && handleDayClick(day)}
-          >
-            {day && <span className="text-sm text-gray-800">{day}</span>}
-          </div>
+      <div className="grid grid-cols-7 gap-2 text-center font-bold text-gray-700">
+        {weekDays.map((day, i) => (
+          <div key={i}>{day}</div>
         ))}
+        {[...Array(daysInMonth)].map((_, i) => {
+          const day = i + 1;
+          const hasTask = hasTaskOnDay(day);
+          const isSelected = day === selectedDay && isModalOpen;
+
+          return (
+            <button
+              key={day}
+              onClick={() => openModal(day)}
+              aria-label={`Dia ${day}${hasTask ? ", com tarefa" : ""}`}
+              className={`border rounded p-2 relative hover:bg-rose-200 focus:outline-none transition ${
+                isSelected ? "bg-rose-100 border-rose-600" : ""
+              }`}
+            >
+              {day}
+              {hasTask && (
+                <span className="absolute top-1 right-1 text-xs font-bold text-rose-600">
+                  X
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-10">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-            <h3 className="text-lg font-bold mb-4">Adicionar Tarefa</h3>
+        <div
+          className="fixed inset-0 flex justify-center items-center"
+          style={{
+            backgroundColor: "rgba(0,0,0,0.3)",
+            backdropFilter: "blur(4px)",
+            zIndex: 1000,
+          }}
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white p-6 rounded shadow-md w-80 max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold mb-4">
+              Tarefas para {selectedDay}/{currentMonth + 1}/{currentYear}
+            </h3>
+
+            {tasksOfSelectedDay.length === 0 && (
+              <p className="mb-4 text-gray-500">Nenhuma tarefa neste dia.</p>
+            )}
+
+            <ul className="mb-4 list-disc list-inside max-h-40 overflow-auto">
+              {tasksOfSelectedDay.map((task, idx) => (
+                <li key={idx} className="text-gray-800">
+                  {task.name}
+                </li>
+              ))}
+            </ul>
+
             <input
               type="text"
-              className="border border-rose-400 p-2 rounded mb-4 w-full"
-              placeholder="Nome da tarefa"
-              value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
+              placeholder="Nova tarefa"
+              value={newTaskName}
+              onChange={(e) => setNewTaskName(e.target.value)}
+              className="w-full p-2 border rounded mb-4"
+              ref={inputRef}
+              onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
             />
-            <div className="flex justify-between">
+
+            <div className="flex justify-end gap-3">
               <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-gray-300 text-black px-4 py-2 rounded"
+                onClick={closeModal}
+                className="px-4 py-2 border rounded hover:bg-gray-100"
               >
-                Cancelar
+                Fechar
               </button>
               <button
-                onClick={handleTaskSubmit}
-                className="bg-rose-500 text-white px-4 py-2 rounded"
+                onClick={handleAddTask}
+                className="px-4 py-2 bg-rose-500 text-white rounded hover:bg-rose-600"
               >
                 Adicionar
               </button>

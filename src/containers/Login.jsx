@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/authServiceLocal";
+import { loginUser } from "../services/authServiceFirebase";
 
 function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -46,18 +46,27 @@ function Login() {
               value={formData.email}
               onChange={handleChange}
               className="w-full p-2 border border-rose-200 rounded"
+              required
             />
           </div>
 
           <div>
-            <label className="block">Senha <button onClick={()=>navigate("/forgot")}> <span className="text-rose-500 text-sm ml-56">Esqueceu a senha?</span></button></label>
+            <label className="block">
+              Senha{" "}
+              <button type="button" onClick={() => navigate("/forgot")}>
+                <span className="text-rose-500 text-sm ml-56">
+                  Esqueceu a senha?
+                </span>
+              </button>
+            </label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               className="w-full p-2 border border-rose-200 rounded"
-            /> 
+              required
+            />
           </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -72,6 +81,7 @@ function Login() {
         <p className="mt-4 text-center text-sm text-gray-600">
           Ainda não tem uma conta?{" "}
           <button
+            type="button"
             className="text-rose-500 hover:underline"
             onClick={() => navigate("/register")}
           >

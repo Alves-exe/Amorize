@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../services/authServiceLocal";
+import { registerUser } from "../services/authServiceFirebase";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -32,24 +32,24 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    const payload = {
-      name: `${formData.noivo} & ${formData.noiva}`,
-      email: formData.email,
-      password: formData.password,
-      userType: "NOIVA", // ou NOIVO – aqui é fixo como exemplo
-      weddingDate: formData.dataCasamento,
-      partner1: formData.noivo,
-      partner2: formData.noiva,
-    };
-
     try {
-      await registerUser(payload);
+      await registerUser({
+        email: formData.email,
+        password: formData.password,
+        name: `${formData.noivo} & ${formData.noiva}`,
+        weddingDate: formData.dataCasamento,
+        partner1: formData.noivo,
+        partner2: formData.noiva,
+        userType: "casal",
+      });
+
       console.log("Usuário registrado com sucesso");
       navigate("/login");
     } catch (error) {
@@ -147,6 +147,7 @@ function Register() {
         <p className="mt-4 text-center text-sm text-gray-600">
           Já tem uma conta?{" "}
           <button
+            type="button"
             className="text-rose-500 hover:underline"
             onClick={() => navigate("/login")}
           >

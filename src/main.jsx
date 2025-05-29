@@ -7,6 +7,7 @@ import Register from "./containers/Register.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Forgot from "./containers/Forgot.jsx";
 import Dashboard from "./containers/Dashboard.jsx";
+import { AuthProvider } from "./services/AuthContext"; // ⬅️ ajuste o caminho conforme necessário
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      {" "}
+      {/* ✅ Envolvendo com AuthProvider */}
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>
 );

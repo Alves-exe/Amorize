@@ -1,30 +1,37 @@
-import { createContext, useContext, useState, useEffect } from "react";
+// src/contexts/AuthContext.js
+import { createContext, useContext, useEffect, useState } from "react";
+import { auth } from "../firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { getUserProfile } from "../services/authServiceFirebase";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem("currentUser");
-    if (stored) {
-      setCurrentUser(JSON.parse(stored));
-    }
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const data = await getUserProfile(user.uid);
+        setCurrentUser(user);
+        setProfile(data);
+      } else {
+        setCurrentUser(null);
+        setProfile(null);
+      }
+      setLoading(false);
+    });
+
+    return unsubscribe;
   }, []);
 
-  const login = (user) => {
-    localStorage.setItem("currentUser", JSON.stringify(user));
-    setCurrentUser(user);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("currentUser");
-    setCurrentUser(null);
-  };
+  const logout = () => signOut(auth);
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout }}>
-      {children}
+    <AuthContext.Provider value={{ currentUser, profile, logout }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

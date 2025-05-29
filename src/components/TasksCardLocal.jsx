@@ -1,125 +1,74 @@
-import { useEffect, useState } from "react";
-import { FaCheckCircle, FaTrash } from "react-icons/fa";
-import { Dot, ListChecks } from "lucide-react";
+import React from "react";
+import {
+  updateTaskInFirestore,
+  deleteTaskFromFirestore,
+} from "../api/api-tasks";
+import { useAuth } from "../services/AuthContext";
+import { Trash2 } from "lucide-react";
 
-function TasksCardLocal({ onProgressUpdate }) {
-  const currentUser = JSON.parse(localStorage.getItem("amorize_current_user"));
-  const userId = currentUser?.id;
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState("");
+const TasksCardLocal = ({ tasks, onProgressUpdate }) => {
+  const { currentUser } = useAuth();
 
-  const saveTasksToLocalStorage = (userId, tasks) => {
-    localStorage.setItem(`tasks_${userId}`, JSON.stringify(tasks));
-  };
+  // Marcar tarefa como feita/não feita
+  const toggleTaskDone = async (task) => {
+    try {
+      await updateTaskInFirestore(currentUser.uid, task.id, {
+        done: !task.done,
+      });
 
-  const getTasksFromLocalStorage = (userId) => {
-    const stored = localStorage.getItem(`tasks_${userId}`);
-    return stored ? JSON.parse(stored) : [];
-  };
+      // Atualiza progresso local
+      const total = tasks.length;
+      const doneCount = tasks.filter((t) =>
+        t.id === task.id ? !t.done : t.done
+      ).length;
 
-  const updateProgress = (taskList) => {
-    const total = taskList.length;
-    const done = taskList.filter((task) => task.completed).length;
-    if (typeof onProgressUpdate === "function") {
-      onProgressUpdate(done, total);
+      onProgressUpdate(doneCount, total);
+    } catch (error) {
+      console.error("Erro ao atualizar tarefa:", error);
     }
   };
 
-  useEffect(() => {
-    if (userId) {
-      const storedTasks = getTasksFromLocalStorage(userId);
-      setTasks(storedTasks);
-      updateProgress(storedTasks);
+  // Excluir tarefa
+  const handleDelete = async (taskId) => {
+    try {
+      await deleteTaskFromFirestore(currentUser.uid, taskId);
+    } catch (error) {
+      console.error("Erro ao excluir tarefa:", error);
     }
-  }, [userId]);
-
-  const handleAddTask = () => {
-    if (!newTask.trim()) return;
-
-    const newTaskObj = {
-      id: Date.now(),
-      title: newTask.trim(),
-      completed: false,
-    };
-
-    const updatedTasks = [...tasks, newTaskObj];
-    setTasks(updatedTasks);
-    saveTasksToLocalStorage(userId, updatedTasks);
-    updateProgress(updatedTasks);
-    setNewTask("");
   };
 
-  const handleToggleComplete = (id) => {
-    const updatedTasks = tasks.map((task) =>
-      task.id === id ? { ...task, completed: !task.completed } : task
-    );
-    setTasks(updatedTasks);
-    saveTasksToLocalStorage(userId, updatedTasks);
-    updateProgress(updatedTasks);
-  };
-
-  const handleDelete = (id) => {
-    const updatedTasks = tasks.filter((task) => task.id !== id);
-    setTasks(updatedTasks);
-    saveTasksToLocalStorage(userId, updatedTasks);
-    updateProgress(updatedTasks);
-  };
+  if (!tasks || tasks.length === 0) {
+    return <p className="text-gray-500">Nenhuma tarefa adicionada.</p>;
+  }
 
   return (
-    <div className="bg-white shadow-md rounded-lg  w-full max-w-sm">
-      <h3 className="text-lg font-semibold mb-4 text-gray-700">
-        Minhas Tarefas{" "}
-        <ListChecks size={30} className="inline-flex ml-20 text-rose-400" />
-      </h3>
-
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          placeholder="Adicionar tarefa"
-          className="flex-1 border p-2 rounded"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-        />
-        <button
-          className="bg-rose-500 text-white px-4 py-2 rounded hover:bg-rose-600"
-          onClick={handleAddTask}
-        >
-          +
-        </button>
-      </div>
-
-      <ul className="space-y-2 max-h-64 overflow-y-auto">
+    <div className="max-h-64 overflow-auto pr-2">
+      <ul className="list-disc list-inside space-y-2">
         {tasks.map((task) => (
-          <li
-            key={task.id}
-            className="flex justify-between items-center border border-rose-200 p-2 rounded"
-          >
-            <Dot size={30} className="text-rose-500" />
-            <span
-              onClick={() => handleToggleComplete(task.id)}
-              className={`cursor-pointer flex-1 ${
-                task.completed ? "line-through text-gray-400" : ""
-              }`}
-            >
-              {task.title}
-            </span>
-            <div className="flex gap-2 items-center">
-              {task.completed && <FaCheckCircle className="text-green-500" />}
-              <FaTrash
-                className="text-red-500 cursor-pointer"
-                onClick={() => handleDelete(task.id)}
+          <li key={task.id} className="flex items-center justify-between">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={task.done || false}
+                onChange={() => toggleTaskDone(task)}
+                className="mr-2"
               />
-            </div>
+              <span className={task.done ? "line-through text-gray-500" : ""}>
+                <strong>Dia {task.day}:</strong> {task.name}
+              </span>
+            </label>
+            <button
+              onClick={() => handleDelete(task.id)}
+              className="ml-2 text-red-500 hover:text-red-700"
+              title="Excluir tarefa"
+            >
+              <Trash2 size={16} />
+            </button>
           </li>
         ))}
-        {tasks.length === 0 && (
-          <p className="text-sm text-gray-500 text-center">
-            Sem tarefas ainda.
-          </p>
-        )}
       </ul>
     </div>
   );
-}
+};
 
 export default TasksCardLocal;

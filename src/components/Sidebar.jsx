@@ -1,30 +1,8 @@
-import { useEffect, useState } from "react";
-import {
-  Home,
-  Users,
-  Calendar,
-  Mail,
-  
-  User,
-  DollarSign,
-} from "lucide-react";
+import { useAuth } from "../services/AuthContext";
+import { Home, Users, Calendar, Mail, User, DollarSign } from "lucide-react";
 
 function Sidebar({ setContent, handleDashboardClick }) {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("amorize_current_user");
-      if (stored && stored !== "undefined") {
-        const parsedUser = JSON.parse(stored);
-        setUser(parsedUser);
-      } else {
-        console.warn("Usuário não encontrado no localStorage ou inválido.");
-      }
-    } catch (error) {
-      console.error("Erro ao carregar user na Sidebar:", error);
-    }
-  }, []);
+  const { currentUser } = useAuth();
 
   const menuItems = [
     { icon: <Home />, label: "Dashboard", onClick: handleDashboardClick },
@@ -76,27 +54,30 @@ function Sidebar({ setContent, handleDashboardClick }) {
     },
   ];
 
-  
-
   return (
     <div className="p-4 inline-flex shadow-lg w-screen">
       <h1 className="text-2xl font-bold text-rose-500 ml-6">❤Amorize</h1>
 
-      <div className="flex flex-inline space-x-9 ">
+      <div className="flex flex-inline space-x-9 ml-10">
         {menuItems.map(({ icon, label, onClick }, i) => (
           <button
             key={i}
-            className="flex items-center gap-2 text-left ml-6 hover:text-rose-500 font-medium"
+            className="flex items-center gap-2 text-left hover:text-rose-500 font-medium"
             onClick={onClick}
           >
             {icon}
             {label}
           </button>
         ))}
-  
-        </div>
       </div>
-   
+
+      {/* Exibir nome do casal, opcional */}
+      {currentUser && currentUser.partner1 && (
+        <div className="ml-auto pr-6 text-sm text-gray-500 hidden sm:block">
+          Bem-vindos, {currentUser.partner1} & {currentUser.partner2}
+        </div>
+      )}
+    </div>
   );
 }
 
