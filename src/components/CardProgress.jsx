@@ -21,7 +21,7 @@ export default function CardProgress({
   return (
     <div className="bg-white drop-shadow-2xl rounded-xl mt-22 p-6">
       <h2 className="text-xl font-bold text-black">{title}</h2>
-      <p className="text-gray-600 mb-2">{`Você já completou ${progressValue}% das tarefas`}</p>
+      <p className="text-gray-600 mb-2">{`Você já completou ${progressValue}% do planejamento`}</p>
 
       {/* Barra de progresso */}
       <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-2 relative">
