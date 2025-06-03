@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { registerUser } from "../services/authServiceFirebase";
 
 function Register() {
+  const hoje = new Date();
   const [formData, setFormData] = useState({
     noivo: "",
     noiva: "",
@@ -24,6 +25,9 @@ function Register() {
     if (!formData.noivo) newErrors.noivo = "Nome do noivo é obrigatório";
     if (!formData.noiva) newErrors.noiva = "Nome da noiva é obrigatório";
     if (!formData.dataCasamento) newErrors.dataCasamento = "Data é obrigatória";
+    if (new Date(formData.dataCasamento) < hoje)
+      newErrors.dataCasamento = "Data do casamento não pode ser no passado";
+
     if (!formData.email) newErrors.email = "E-mail é obrigatório";
     if (!formData.password) newErrors.password = "Senha é obrigatória";
 
