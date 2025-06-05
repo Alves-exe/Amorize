@@ -35,7 +35,7 @@ export default function CardProgress({
 
       {/* Detalhes do orçamento */}
       <div className="text-xl mt-2 inline-flex gap-x-32 text-black font-medium">
-        <p className="ml-5 justify-items-center">
+        <p className="ml-52 justify-items-center">
           <strong>{formatCurrency(orcamentoTotal)}</strong>
           <p className="text-sm ml-2 text-gray-500">Orçamento Total</p>
         </p>
