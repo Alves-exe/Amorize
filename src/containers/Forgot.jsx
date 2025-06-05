@@ -1,13 +1,30 @@
 import { GoHeartFill } from "react-icons/go";
 import Inputs from "../components/Inputs";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+
 export default function Forgot() {
   const navigate = useNavigate();
-  // Função para lidar com o envio do e-mail de redefinição de senha
-  const handleResetPassword = async (email) => {
-    console.log(`E-mail enviado para: ${email}`);
+  const [email, setEmail] = useState("");
+  const [msg, setMsg] = useState("");
 
-    navigate("/login");
+  const handleResetPassword = async () => {
+    if (!email) {
+      setMsg("Por favor, insira seu email.");
+      return;
+    }
+
+    const auth = getAuth();
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setMsg("Email de redefinição enviado! Verifique sua caixa de entrada.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    } catch (error) {
+      setMsg("Erro: " + error.message);
+    }
   };
 
   return (
@@ -23,13 +40,22 @@ export default function Forgot() {
           <p className="text-gray-500 mt-3 mb-3">
             Insira o e-mail para redefinir a senha
           </p>
-          <Inputs type="email" placeholder="Insira seu e-mail" />{" "}
+
+          <Inputs
+            type="email"
+            placeholder="Insira seu e-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
           <button
-            onClick={() => handleResetPassword}
+            onClick={handleResetPassword}
             className="bg-rose-500 rounded-lg p-2 my-4 text-white font-semibold"
           >
             Enviar
           </button>
+
+          {msg && <p className="text-center mt-2 text-sm">{msg}</p>}
         </div>
       </div>
     </div>
